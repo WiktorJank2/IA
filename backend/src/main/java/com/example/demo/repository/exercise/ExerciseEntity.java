@@ -1,34 +1,32 @@
-package com.example.demo.controllers.exercise;
+package com.example.demo.repository.exercise;
+
+import jakarta.persistence.*;
+
+import java.util.List;
+import java.util.UUID;
 
 
+@Entity
+@Table(name = "exercises")
+public class ExerciseEntity {
 
-public class ExerciseDto {
-    private String id;
+    @Id
+    @GeneratedValue
+    private UUID id;
     private String name;
     private String description;
-    private String[] muscles;
+    private List<String> muscles;
     private int difficultyRating;
     private int effectivenessRating;
     private int overallRating;
 
-    public ExerciseDto() {
-    }
+    public ExerciseEntity() {}
 
-    public ExerciseDto(String id, String name, String description, String[] muscles, int difficultyRating, int effectivenessRating, int overallRating) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.muscles = muscles;
-        this.difficultyRating = difficultyRating;
-        this.effectivenessRating = effectivenessRating;
-        this.overallRating = overallRating;
-    }
-
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -47,11 +45,10 @@ public class ExerciseDto {
     public void setDescription(String description) {
         this.description = description;
     }
-
     public String[] getMuscles() {
         return muscles;
     }
-    public void setMuscles(String[] muscles) {
+    public void setMuscles(List<String> muscles) {
         this.muscles = muscles;
     }
     public int getDifficultyRating() {
@@ -64,7 +61,7 @@ public class ExerciseDto {
         return effectivenessRating;
     }
     public void setEffectivenessRating(int effectivenessRating) {
-            this.effectivenessRating = effectivenessRating;
+        this.effectivenessRating = effectivenessRating;
     }
     public int getOverallRating() {
         return overallRating;
