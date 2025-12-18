@@ -44,13 +44,15 @@ public class PlanFacade {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found"));
     }
     public PlanDto updatePlan(String id, PlanDto planDto) {
-        PlanEntity plan_not_found = planRepository.findById(UUID.fromString(id))
+        PlanEntity plan = planRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found"));
 
-        plan_not_found.setName(planDto.getName());
-        plan_not_found.setNotes(planDto.getNotes());
+        plan.setName(planDto.getName());
+        plan.setWorkoutIds(planDto.getWorkoutIds());
 
-        PlanEntity planEntity = planRepository.save(plan_not_found);
+
+
+        PlanEntity planEntity = planRepository.save(plan);
 
         return planMapper.toDto(planEntity);
     }

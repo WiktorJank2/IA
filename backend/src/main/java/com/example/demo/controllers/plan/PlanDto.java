@@ -1,14 +1,16 @@
 package com.example.demo.controllers.plan;
 
+import java.util.List;
+
 public class PlanDto {
     private String id;
     private String name;
-    private String[] workoutIds;
+    private List<String> workoutIds;
 
     public PlanDto() {
     }
 
-    public PlanDto(String id, String name, String description, String[] workoutIds) {
+    public PlanDto(String id, String name, List<String> workoutIds) {
         this.id = id;
         this.name = name;
         this.workoutIds = workoutIds;
@@ -29,10 +31,10 @@ public class PlanDto {
     public void setName(String name) {
         this.name = name;
     }
-    public String[] getWorkoutIds() {
+    public List<String> getWorkoutIds() {
         return workoutIds;
     }
-    public void setWorkoutIds(String[] workoutIds) {
+    public void setWorkoutIds(List<String> workoutIds) {
         this.workoutIds = workoutIds;
     }
 }

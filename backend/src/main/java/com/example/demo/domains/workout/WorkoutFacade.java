@@ -2,13 +2,13 @@ package com.example.demo.domains.workout;
 
 
 import com.example.demo.controllers.workout.WorkoutDto;
-import com.example.demo.controllers.patients.PatientDto;
 import com.example.demo.repository.workout.WorkoutEntity;
 import com.example.demo.repository.workout.WorkoutRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,13 +45,14 @@ public class WorkoutFacade {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout not found"));
     }
     public WorkoutDto updateWorkout(String id, WorkoutDto workoutDto) {
-        WorkoutEntity workout_not_found = workoutRepository.findById(UUID.fromString(id))
+        WorkoutEntity workout = workoutRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout not found"));
 
-        workout_not_found.setName(workoutDto.getName());
-        workout_not_found.setNotes(workoutDto.getNotes());
+        workout.setName(workoutDto.getName());
+        workout.setExercisesIds(workoutDto.getExercisesIds());
 
-        WorkoutEntity workoutEntity = workoutRepository.save(workout_not_found);
+
+        WorkoutEntity workoutEntity = workoutRepository.save(workout);
 
         return workoutMapper.toDto(workoutEntity);
     }

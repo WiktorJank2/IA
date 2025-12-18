@@ -1,20 +1,24 @@
 package com.example.demo.controllers.exercise;
 
 
+import java.util.List;
 
 public class ExerciseDto {
     private String id;
     private String name;
     private String description;
-    private String[] muscles;
+    private List<String> muscles;
     private int difficultyRating;
     private int effectivenessRating;
     private int overallRating;
+    private double weight;
+    private int numberOfReps;
+    private int numberOfSets;
 
     public ExerciseDto() {
     }
 
-    public ExerciseDto(String id, String name, String description, String[] muscles, int difficultyRating, int effectivenessRating, int overallRating) {
+    public ExerciseDto(String id, String name, String description, List<String> muscles, int difficultyRating, int effectivenessRating, int overallRating,  double weight, int numberOfReps, int numberOfSets) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -22,6 +26,9 @@ public class ExerciseDto {
         this.difficultyRating = difficultyRating;
         this.effectivenessRating = effectivenessRating;
         this.overallRating = overallRating;
+        this.weight = weight;
+        this.numberOfReps = numberOfReps;
+        this.numberOfSets = numberOfSets;
     }
 
     public String getId() {
@@ -48,10 +55,10 @@ public class ExerciseDto {
         this.description = description;
     }
 
-    public String[] getMuscles() {
+    public List<String> getMuscles() {
         return muscles;
     }
-    public void setMuscles(String[] muscles) {
+    public void setMuscles(List<String> muscles) {
         this.muscles = muscles;
     }
     public int getDifficultyRating() {
@@ -71,6 +78,25 @@ public class ExerciseDto {
     }
     public void setOverallRating(int overallRating) {
         this.overallRating = overallRating;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+    public int getNumberOfReps() {
+        return numberOfReps;
+    }
+    public void setNumberOfReps(int numberOfReps) {
+        this.numberOfReps = numberOfReps;
+    }
+    public int getNumberOfSets() {
+        return numberOfSets;
+    }
+    public void setNumberOfSets(int numberOfSets) {
+        this.numberOfSets = numberOfSets;
     }
 
 }

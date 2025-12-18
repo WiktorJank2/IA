@@ -4,6 +4,7 @@ import com.example.demo.controllers.plan.PlanDto;
 import com.example.demo.repository.plan.PlanEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,7 +28,7 @@ public class PlanMapper {
 
         dto.setId(entity.getId().toString());
         dto.setName(entity.getName());
-        dto.setWorkoutIds(dto.getWorkoutIds());
+        dto.setWorkoutIds(entity.getWorkoutIds());
 
         return dto;
     }

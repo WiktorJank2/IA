@@ -16,18 +16,18 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<WorkoutDto> getWorkouts() {
-        return workoutFacade.getWorkouts();
+    public List<WorkoutDto> getWorkout() {
+        return workoutFacade.getWorkout();
     }
 
     @PostMapping
     public WorkoutDto addWorkout(@RequestBody WorkoutDto workoutDto) {
-        return workoutFacade.addWorkouts(workoutDto);
+        return workoutFacade.addWorkout(workoutDto);
     }
 
     @GetMapping("/{id}")
     public WorkoutDto getWorkout(@PathVariable String id) {
-        return workoutFacade.getWorkoutsById(id);
+        return workoutFacade.getWorkoutById(id);
     }
 
     @PutMapping("/{id}")

@@ -19,6 +19,7 @@ public class WorkoutEntity {
     private String name;
     private List<String> exercisesIds;
 
+
     public WorkoutEntity() {}
 
     public UUID getId() {
@@ -44,4 +45,5 @@ public class WorkoutEntity {
   public void setExercisesIds(List<String> exercisesIds) {
         this.exercisesIds=exercisesIds;
   }
+
 }

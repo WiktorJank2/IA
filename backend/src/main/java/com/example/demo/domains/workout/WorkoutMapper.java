@@ -4,6 +4,7 @@ import com.example.demo.controllers.workout.WorkoutDto;
 import com.example.demo.repository.workout.WorkoutEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,7 +28,8 @@ public class WorkoutMapper {
 
         dto.setId(entity.getId().toString());
         dto.setName(entity.getName());
-        dto.setExercisesIds(dto.getExercisesIds());
+        dto.setExercisesIds(entity.getExercisesIds());
+
 
         return dto;
     }

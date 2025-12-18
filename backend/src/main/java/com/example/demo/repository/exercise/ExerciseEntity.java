@@ -19,6 +19,9 @@ public class ExerciseEntity {
     private int difficultyRating;
     private int effectivenessRating;
     private int overallRating;
+    private double weight;
+    private int numberOfReps;
+    private int numberOfSets;
 
     public ExerciseEntity() {}
 
@@ -45,7 +48,7 @@ public class ExerciseEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-    public String[] getMuscles() {
+    public List<String> getMuscles() {
         return muscles;
     }
     public void setMuscles(List<String> muscles) {
@@ -68,6 +71,24 @@ public class ExerciseEntity {
     }
     public void setOverallRating(int overallRating) {
         this.overallRating = overallRating;
+    }
+    public double getWeight() {
+        return weight;
+    }
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+    public int getNumberOfReps() {
+        return numberOfReps;
+    }
+    public void setNumberOfReps(int numberOfReps) {
+        this.numberOfReps = numberOfReps;
+    }
+    public int getNumberOfSets() {
+        return numberOfSets;
+    }
+    public void setNumberOfSets(int numberOfSets) {
+        this.numberOfSets = numberOfSets;
     }
 
 }

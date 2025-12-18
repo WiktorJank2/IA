@@ -44,13 +44,21 @@ public class ExerciseFacade {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
     }
     public ExerciseDto updateExercise(String id, ExerciseDto exerciseDto) {
-        ExerciseEntity exercise_not_found = exerciseRepository.findById(UUID.fromString(id))
+        ExerciseEntity exercise = exerciseRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
 
-        exercise_not_found.setName(exerciseDto.getName());
-        exercise_not_found.setNotes(exerciseDto.getNotes());
+        exercise.setName(exerciseDto.getName());
+        exercise.setDescription(exerciseDto.getDescription());
+        exercise.setMuscles(exerciseDto.getMuscles());
+        exercise.setDifficultyRating(exerciseDto.getDifficultyRating());
+        exercise.setEffectivenessRating(exerciseDto.getEffectivenessRating());
+        exercise.setOverallRating(exerciseDto.getOverallRating());
+        exercise.setWeight(exercise.getWeight());
+        exercise.setNumberOfReps(exerciseDto.getNumberOfReps());
+        exercise.setNumberOfSets(exerciseDto.getNumberOfSets());
 
-        ExerciseEntity exerciseEntity = exerciseRepository.save(exercise_not_found);
+
+        ExerciseEntity exerciseEntity = exerciseRepository.save(exercise);
 
         return exerciseMapper.toDto(exerciseEntity);
     }
