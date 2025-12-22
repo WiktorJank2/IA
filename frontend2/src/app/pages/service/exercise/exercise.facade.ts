@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, take, tap } from 'rxjs';
 
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { ExerciseService } from '@/pages/service/exercise/exercise.service';
-import { SymptomDto } from '@/pages/service/symptom/symptom.model';
 
 @Injectable({
     providedIn: 'root'
@@ -25,7 +24,6 @@ export class ExerciseFacade {
             )
             .subscribe()
     }
-
     // return the HTTP observable and update the BehaviorSubject
     fetchById(id: string): Observable<ExerciseDto> {
         // clear any previous value so UI doesn't show stale patient
@@ -50,7 +48,6 @@ export class ExerciseFacade {
             })
         );
     }
-
     updateExercise(id: string, exercise: ExerciseDto): Observable<ExerciseDto> {
         return this.exerciseService.update(id, exercise).pipe(
             take(1),

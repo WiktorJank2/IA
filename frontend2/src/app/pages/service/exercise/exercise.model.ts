@@ -1,5 +1,10 @@
-export interface ExerciseDto {
-    id: string;             // UUID
+export interface ExerciseDto{
+    id: string;
     name: string;
-    notes: string;
+    description: string;
+    muscles: string[];
+    difficultyRating: number;
+    effectivenessRating: number;
+    overallRating: number;
+
 }

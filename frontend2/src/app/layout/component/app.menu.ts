@@ -22,33 +22,19 @@ export class AppMenu {
         this.model = [
             {
                 label: 'Home',
-                items: [{ label: 'Home', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
+                items: [{ label: 'Home Page', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
             },
-
-
             {
                 label: 'Menu',
                 items: [
-                    { label: 'Patients', icon: 'pi pi-fw pi-user', routerLink: ['/menu/patients'] },
-                    { label: 'Meetings', icon: 'pi pi-fw pi-calendar', routerLink: ['/menu/meetings'] },
-                    { label: 'Symptoms', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/menu/symptoms'] },
-                    { label: 'Exercises', icon: 'pi pi-fw pi-comment', routerLink: ['/menu/exercises'] },
-                    { label: 'Statistics', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/menu/statistics'] }
+                    { label: 'Plan', icon: '', routerLink: ['/menu/plan'] },
+                    { label: 'Exercise', icon: '', routerLink: ['/menu/exercise'] },
+                    { label: 'Samples', icon: '', routerLink: ['/menu/samples'] },
+                    { label: 'Workouts', icon: '', routerLink: ['/menu/workout'] },
+                    { label: 'My Plans', icon: '', routerLink: ['/menu/my-plans'] }
                 ]
-            },
-
-            {
-                label: 'Object View',
-                items: [
-                    { label: 'Patient', icon: 'pi pi-fw pi-user', routerLink: ['/view/patient'] },
-                    { label: 'Meeting', icon: 'pi pi-fw pi-calendar', routerLink: ['/view/meeting'] },
-                    { label: 'Symptom', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/view/symptom'] },
-                    { label: 'Exercise', icon: 'pi pi-fw pi-comment', routerLink: ['/view/exercise'] },
-                ]
-            },
-
-            {
-                label: 'UI Kit',
+            },{
+                label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
                     { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
@@ -67,9 +53,6 @@ export class AppMenu {
                     { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/uikit/misc'] }
                 ]
             },
-
-
-
             {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
