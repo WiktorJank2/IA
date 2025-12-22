@@ -18,10 +18,11 @@ import {RouterLink} from "@angular/router";
         IconField,
         InputIcon,
         InputText,
-        Toolbar,
+        // Toolbar,
         Image,
         RouterLink
     ],
+    standalone: true,
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss'
 })
