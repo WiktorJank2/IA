@@ -47,14 +47,14 @@ declare type SurfacesType = {
                 <div class="pt-2 flex gap-2 flex-wrap justify-start">
                     @for (primaryColor of primaryColors(); track primaryColor.name) {
                         <button
-                            type="button"
-                            [title]="primaryColor.name"
-                            (click)="updateColors($event, 'primary', primaryColor)"
-                            [ngClass]="{
+                                type="button"
+                                [title]="primaryColor.name"
+                                (click)="updateColors($event, 'primary', primaryColor)"
+                                [ngClass]="{
                                     'outline outline-primary': primaryColor.name === selectedPrimaryColor()
                                 }"
-                            class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center outline-offset-1 shadow"
-                            [style]="{
+                                class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center outline-offset-1 shadow"
+                                [style]="{
                                     'background-color': primaryColor?.name === 'noir' ? 'var(--text-color)' : primaryColor?.palette?.['500']
                                 }"
                         >
@@ -67,14 +67,14 @@ declare type SurfacesType = {
                 <div class="pt-2 flex gap-2 flex-wrap justify-start">
                     @for (surface of surfaces; track surface.name) {
                         <button
-                            type="button"
-                            [title]="surface.name"
-                            (click)="updateColors($event, 'surface', surface)"
-                            class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center p-0 outline-offset-1"
-                            [ngClass]="{
+                                type="button"
+                                [title]="surface.name"
+                                (click)="updateColors($event, 'surface', surface)"
+                                class="cursor-pointer w-5 h-5 rounded-full flex shrink-0 items-center justify-center p-0 outline-offset-1"
+                                [ngClass]="{
                                     'outline outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'slate'
                                 }"
-                            [style]="{
+                                [style]="{
                                     'background-color': surface?.palette?.['500']
                                 }"
                         ></button>
@@ -83,11 +83,13 @@ declare type SurfacesType = {
             </div>
             <div class="flex flex-col gap-2">
                 <span class="text-sm text-muted-color font-semibold">Presets</span>
-                <p-selectbutton [options]="presets" [ngModel]="selectedPreset()" (ngModelChange)="onPresetChange($event)" [allowEmpty]="false" size="small" />
+                <p-selectbutton [options]="presets" [ngModel]="selectedPreset()"
+                                (ngModelChange)="onPresetChange($event)" [allowEmpty]="false" size="small"/>
             </div>
             <div *ngIf="showMenuModeButton()" class="flex flex-col gap-2">
                 <span class="text-sm text-muted-color font-semibold">Menu Mode</span>
-                <p-selectbutton [ngModel]="menuMode()" (ngModelChange)="onMenuModeChange($event)" [options]="menuModeOptions" [allowEmpty]="false" size="small" />
+                <p-selectbutton [ngModel]="menuMode()" (ngModelChange)="onMenuModeChange($event)"
+                                [options]="menuModeOptions" [allowEmpty]="false" size="small"></p-selectbutton>
             </div>
         </div>
     `,
@@ -440,7 +442,7 @@ export class AppConfigurator {
         $t().preset(preset).preset(this.getPresetExt()).surfacePalette(surfacePalette).use({ useDefaultOptions: true });
     }
 
-    onMenuModeChange(event: string) {
+    onMenuModeChange(event: any) {
         this.layoutService.layoutConfig.update((prev) => ({ ...prev, menuMode: event }));
     }
 }
