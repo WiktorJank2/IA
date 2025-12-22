@@ -20,7 +20,7 @@ import {Textarea} from "primeng/textarea";
         FormsModule,
         InputText,
         Select,
-        Textarea,
+        // Textarea,
         FormsModule,
         Button,
         RouterLink,

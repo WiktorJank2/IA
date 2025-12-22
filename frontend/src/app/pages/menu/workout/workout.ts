@@ -52,7 +52,7 @@ interface expandedRows {
         CurrencyPipe,
         DatePipe,
         AutoComplete,
-        Image
+        // Image
     ],
     templateUrl: './workout.html',
     styleUrl: './workout.scss',
