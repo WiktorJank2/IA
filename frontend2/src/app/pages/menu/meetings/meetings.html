@@ -1,0 +1,199 @@
+<div class="card">
+    <div class="font-semibold text-xl mb-4">SEARCH BAR AND UTIL BUTTONS</div>
+    <p-toolbar>
+        <ng-template #start>
+            <p-button icon="pi pi-plus" class="mr-2" severity="secondary" text />
+            <p-button icon="pi pi-print" class="mr-2" severity="secondary" text />
+            <p-button icon="pi pi-upload" severity="secondary" text />
+        </ng-template>
+
+        <ng-template #center>
+            <p-iconfield>
+                <p-inputicon>
+                    <i class="pi pi-search"></i>
+                </p-inputicon>
+                <input pInputText placeholder="Search" />
+            </p-iconfield>
+        </ng-template>
+    </p-toolbar>
+</div>
+<div class="card">
+    <div class="w-full flex justify-between mt-4">
+        <div class="font-semibold text-xl">Meetings</div>
+        <p-button [routerLink]="['/view', 'meeting', 'newMeeting']" label="Schedule Meeting" icon="pi pi-plus" iconPos="right"></p-button>
+    </div>
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Upcoming</p-tab>
+            <p-tab value="1">History</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                <div class="card">
+                    <div class="font-semibold text-xl mb-4">Upcoming Meetings</div>
+                    <p-table
+                        #dt1
+                        [value]="upcomingMeetings"
+                        dataKey="id"
+                        [rows]="10"
+                        [rowHover]="true"
+                        [showGridlines]="true"
+                        [paginator]="true"
+                        responsiveLayout="scroll"
+                    >
+                        <ng-template #caption>
+                            <div class="flex justify-between items-center flex-column sm:flex-row">
+                                <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon>
+                                        <i class="pi pi-search"></i>
+                                    </p-inputicon>
+                                    <input pInputText type="text" (input)="onGlobalFilter(dt1, $event)" placeholder="Search keyword" />
+                                </p-iconfield>
+                            </div>
+                        </ng-template>
+                        <ng-template #header>
+                            <tr>
+                                <th style="min-width: 12rem">
+                                    <div class="flex justify-between items-center">
+                                        Patient
+                                        <p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Date
+                                        <p-columnFilter type="date" field="date" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
+                                </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Time
+                                    </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Duration
+                                    </div>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-meeting>
+                            <tr
+                                class="hover-scale cursor-pointer"
+                                [routerLink]="['/view','meeting', meeting.id]"
+                            >
+                                <td>
+                                    {{ meeting.patient.name }} {{ meeting.patient.surname }}
+                                </td>
+                                <td>
+                                    {{ meeting.date }}
+                                </td>
+                                <td>
+                                    {{ meeting.startTime }}
+                                </td>
+                                <td>
+                                    {{ formatDuration(meeting.duration) }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="8">No meetings planned.</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #loadingbody>
+                            <tr>
+                                <td colspan="8">Loading meeting data. Please wait.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+                <div class="card">
+                    <div class="font-semibold text-xl mb-4">Meeting History</div>
+                    <p-table
+                        #dt1
+                        [value]="pastMeetings"
+                        dataKey="id"
+                        [rows]="10"
+                        [rowHover]="true"
+                        [showGridlines]="true"
+                        [paginator]="true"
+                        responsiveLayout="scroll"
+                    >
+                        <ng-template #caption>
+                            <div class="flex justify-between items-center flex-column sm:flex-row">
+                                <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon>
+                                        <i class="pi pi-search"></i>
+                                    </p-inputicon>
+                                    <input pInputText type="text" (input)="onGlobalFilter(dt1, $event)" placeholder="Search keyword" />
+                                </p-iconfield>
+                            </div>
+                        </ng-template>
+                        <ng-template #header>
+                            <tr>
+                                <th style="min-width: 12rem">
+                                    <div class="flex justify-between items-center">
+                                        Patient
+                                        <p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Date
+                                        <p-columnFilter type="date" field="date" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
+                                    </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Time
+                                    </div>
+                                </th>
+                                <th style="min-width: 10rem">
+                                    <div class="flex justify-between items-center">
+                                        Duration
+                                    </div>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-meeting>
+                            <tr
+                                class="hover-scale cursor-pointer"
+                                [routerLink]="['/view','meeting', meeting.id]"
+                            >
+                                <!-- TODO: ensure `customer.id` exists and pass correct id here -->
+                                <td>
+                                    {{ meeting.patient.name }} {{ meeting.patient.surname }}
+                                </td>
+                                <td>
+                                    {{ meeting.date }}
+                                </td>
+                                <td>
+                                    {{ meeting.startTime }}
+                                </td>
+                                <td>
+                                    {{ formatDuration(meeting.duration) }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="8">No meetings planned.</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #loadingbody>
+                            <tr>
+                                <td colspan="8">Loading meeting data. Please wait.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>
+
