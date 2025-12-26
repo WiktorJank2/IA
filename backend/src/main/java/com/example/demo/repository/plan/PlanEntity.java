@@ -18,6 +18,7 @@ public class PlanEntity {
     private UUID id;
     private String name;
     private List<String> workoutIds;
+    private boolean selected;
 
     public PlanEntity() {}
 
@@ -44,4 +45,9 @@ public class PlanEntity {
     public void setWorkoutIds(List<String> workoutIds) {
         this.workoutIds = workoutIds;
     }
+
+    public boolean isSelected() {return selected;}
+
+    public void setSelected(boolean selected) {this.selected = selected;}
+
 }

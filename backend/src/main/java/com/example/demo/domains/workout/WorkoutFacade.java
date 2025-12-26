@@ -49,7 +49,7 @@ public class WorkoutFacade {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout not found"));
 
         workout.setName(workoutDto.getName());
-        workout.setExercisesIds(workoutDto.getExercisesIds());
+        workout.setExercises(workoutDto.getExercises());
 
 
         WorkoutEntity workoutEntity = workoutRepository.save(workout);

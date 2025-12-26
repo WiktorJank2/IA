@@ -2,9 +2,10 @@ package com.example.demo.controllers.exercise;
 
 
 import java.util.List;
+import java.util.UUID;
 
 public class ExerciseDto {
-    private String id;
+    private UUID id;
     private String name;
     private String description;
     private List<String> muscles;
@@ -18,7 +19,7 @@ public class ExerciseDto {
     public ExerciseDto() {
     }
 
-    public ExerciseDto(String id, String name, String description, List<String> muscles, int difficultyRating, int effectivenessRating, int overallRating,  double weight, int numberOfReps, int numberOfSets) {
+    public ExerciseDto(UUID id, String name, String description, List<String> muscles, int difficultyRating, int effectivenessRating, int overallRating,  double weight, int numberOfReps, int numberOfSets) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -31,11 +32,11 @@ public class ExerciseDto {
         this.numberOfSets = numberOfSets;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

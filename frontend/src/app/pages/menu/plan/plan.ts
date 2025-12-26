@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import {IconField} from "primeng/iconfield";
 import {InputText} from "primeng/inputtext";
 import {Image} from "primeng/image";
@@ -6,10 +5,19 @@ import {Button} from "primeng/button";
 import {RouterLink} from "@angular/router";
 import {Select} from "primeng/select";
 import {FormsModule} from "@angular/forms";
-import {Textarea} from "primeng/textarea";
+
+import { Component } from '@angular/core';
+import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
+import { WorkoutDto } from '@/pages/service/workout/workout.model';
+import { Router } from '@angular/router';
+import { PlanFacade } from '@/pages/service/plan/plan.facade';
+import { PlanDto } from '@/pages/service/plan/plan.model';
 
 @Component({
-  selector: 'app-workout',
+    selector: 'app-plan',
+    templateUrl: './plan.html',
+    styleUrls: ['./plan.scss'],
+    standalone: true,
     imports: [
         IconField,
         InputText,
@@ -21,23 +29,57 @@ import {Textarea} from "primeng/textarea";
         InputText,
         Select,
         // Textarea,
-        FormsModule,
         Button,
         RouterLink,
         Image
     ],
-  templateUrl: './plan.html',
-  styleUrl: './plan.scss'
 })
 export class Plan {
-    simplicityR = [
-        { name: '1/5', code: 'Option 1' },
-        { name: '2/5', code: 'Option 2' },
-        { name: '3/5', code: 'Option 3' },
-        { name: '4/5', code: 'Option 2' },
-        { name: '5/5', code: 'Option 2' },
-    ];
+    selectedWorkouts: WorkoutDto[] = Array(7).fill(null);
+    planName: string = '';
+    workoutlist: WorkoutDto[] = [];
+    selected: boolean = false;
 
-    dropdownItem = null;
 
+    constructor(
+        private workoutFacade: WorkoutFacade,
+        private router: Router,
+        private planFacade: PlanFacade
+    ) {
+        this.workoutFacade.fetchAllWorkouts();
+
+        this.workoutFacade.workoutState$.subscribe(workouts => {
+            this.workoutlist = workouts.sort((a, b) => a.name.localeCompare(b.name));
+            console.log('Workouts loaded for dropdowns:', this.workoutlist);
+        });
+    }
+
+    savePlan() {
+        const selectedIds: (string | undefined)[] = this.selectedWorkouts.map(w => w?.id);
+
+        if (selectedIds.includes(undefined)) {
+            // Notify the user that they must select all workouts
+            alert('Please select a workout for each day before saving.');
+            return; // stop the save
+        }
+
+        const plan: PlanDto = {
+            id: '',
+            name: this.planName,
+            workoutIds: selectedIds as string[],
+            selected: this.selected
+        };
+
+        console.log('Saving plan:', plan);
+
+        this.planFacade.createPlan(plan).subscribe({
+            next: () => {
+                console.log('Plan saved successfully');
+                this.router.navigate(['/']);
+            },
+            error: (err: any) => {
+                console.error('Failed to save plan', err);
+            }
+        });
+    }
 }

@@ -1,28 +1,30 @@
 package com.example.demo.controllers.workout;
 
+import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
+
 import java.util.List;
+import java.util.UUID;
+
 
 public class WorkoutDto {
-private String id;
-private String name;
-private List<String> exercisesIds;
+    private UUID id;
+    private String name;
+    private List<WorkoutExerciseDto> exercises; // store exercises with sets & reps
 
+    public WorkoutDto() {}
 
-    public WorkoutDto() {
-    }
-
-    public WorkoutDto(String id, String name, List<String> exercisesIds) {
+    public WorkoutDto(UUID id, String name, List<WorkoutExerciseDto> exercises) {
         this.id = id;
         this.name = name;
-        this.exercisesIds = exercisesIds;
-
+        this.exercises = exercises;
     }
 
-    public String getId() {
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -33,12 +35,13 @@ private List<String> exercisesIds;
     public void setName(String name) {
         this.name = name;
     }
-    public List<String> getExercisesIds() {
-        return exercisesIds;
-    }
-    public void setExercisesIds(List<String> exercisesIds) {
-        this.exercisesIds = exercisesIds;
+
+    public List<WorkoutExerciseDto> getExercises() {
+        return exercises;
     }
 
-
+    public void setExercises(List<WorkoutExerciseDto> exercises) {
+        this.exercises = exercises;
+    }
 }
+

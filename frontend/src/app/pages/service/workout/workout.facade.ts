@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable, take, tap } from 'rxjs';
 
 import { WorkoutDto } from '@/pages/service/workout/workout.model';
 import { WorkoutService } from '@/pages/service/workout/workout.service';
+import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
+
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +13,7 @@ export class WorkoutFacade {
     workoutState$ = new BehaviorSubject<WorkoutDto[]>([])
     workoutByIdState$ = new BehaviorSubject<WorkoutDto | null>(null)
 
-    constructor(private workoutService: WorkoutService) {
-    }
+    constructor(private workoutService: WorkoutService) {}
 
     fetchAllWorkouts(): void {
         this.workoutService.getAll()

@@ -6,6 +6,7 @@ public class PlanDto {
     private String id;
     private String name;
     private List<String> workoutIds;
+    private boolean selected;
 
     public PlanDto() {
     }
@@ -36,5 +37,11 @@ public class PlanDto {
     }
     public void setWorkoutIds(List<String> workoutIds) {
         this.workoutIds = workoutIds;
+    }
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+    public boolean isSelected() {
+        return selected;
     }
 }

@@ -13,8 +13,8 @@ public class ExerciseMapper {
     public ExerciseEntity toEntity(ExerciseDto dto) {
         ExerciseEntity entity = new ExerciseEntity();
 
-        if (dto.getId() != null && !dto.getId().isEmpty()) {
-            entity.setId(UUID.fromString(dto.getId()));
+        if (dto.getId() != null) {
+            entity.setId(dto.getId());
         }
 
         entity.setName(dto.getName());
@@ -33,7 +33,7 @@ public class ExerciseMapper {
     public ExerciseDto toDto(ExerciseEntity entity) {
         ExerciseDto dto = new ExerciseDto();
 
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
         dto.setMuscles(entity.getMuscles());

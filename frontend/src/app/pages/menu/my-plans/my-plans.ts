@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {ElementRef} from '@angular/core';
 import {ButtonDirective, ButtonModule} from "primeng/button";
 import {CommonModule, CurrencyPipe, DatePipe} from "@angular/common";
 import {IconField, IconFieldModule} from "primeng/iconfield";
@@ -7,7 +7,6 @@ import {InputText, InputTextModule} from "primeng/inputtext";
 import {ProgressBar, ProgressBarModule} from "primeng/progressbar";
 import {Select, SelectModule} from "primeng/select";
 import {Slider, SliderModule} from "primeng/slider";
-import {Table, TableModule} from "primeng/table";
 import {Tag, TagModule} from "primeng/tag";
 import {MultiSelectModule} from "primeng/multiselect";
 import {ToggleButtonModule} from "primeng/togglebutton";
@@ -19,6 +18,10 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {Customer, CustomerService} from "@/pages/service/customer.service";
 import {ProductService} from "@/pages/service/product.service";
 import {RouterLink} from "@angular/router";
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { Table, TableModule } from 'primeng/table';
+import { PlanFacade } from '@/pages/service/plan/plan.facade';
+import { PlanDto } from '@/pages/service/plan/plan.model';
 
 interface expandedRows {
     [key: string]: boolean;
@@ -50,60 +53,47 @@ interface expandedRows {
   providers: [ConfirmationService, MessageService, CustomerService, ProductService]
 })
 export class MyPlans {
-    customers1: Customer[] = [];
+    @ViewChild('dt1') dt1!: Table;
 
     statuses: any[] = [];
 
-    activityValues: number[] = [0, 100];
 
-    loading: boolean = true;
+    plans: PlanDto[] = [];
+    loading = false;
 
-    @ViewChild('filter') filter!: ElementRef;
 
     constructor(
         private customerService: CustomerService,
-        private productService: ProductService
+        private productService: ProductService,
+        private planFacade: PlanFacade
     ) {
     }
 
-    formatCurrency(value: number) {
-        return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+    onGlobalFilter(event: Event) {
+        this.dt1.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    clear() {
+        this.dt1.clear();
+    }
+    ngOnInit() {
+        this.loadMyPlans();
     }
 
-    clear(table: Table) {
-        table.clear();
-        this.filter.nativeElement.value = '';
-    }
+    loadMyPlans() {
+        this.loading = true;
 
-    getSeverity(status: string) {
-        switch (status) {
-            case 'qualified':
-            case 'instock':
-            case 'INSTOCK':
-            case 'DELIVERED':
-            case 'delivered':
-                return 'success';
+        this.planFacade.fetchAllPlans()
 
-            case 'negotiation':
-            case 'lowstock':
-            case 'LOWSTOCK':
-            case 'PENDING':
-            case 'pending':
-                return 'warn';
-
-            case 'unqualified':
-            case 'outofstock':
-            case 'OUTOFSTOCK':
-            case 'CANCELLED':
-            case 'cancelled':
-                return 'danger';
-
-            default:
-                return 'info';
-        }
+        this.planFacade.planState$.subscribe({
+            next: (plans) => {
+                this.plans = plans.filter(p => p.selected === true);
+                this.loading = false;
+            },
+            error: (err: any) => {
+                console.error('Failed to load plans', err);
+                this.loading = false;
+            }
+        });
     }
 }

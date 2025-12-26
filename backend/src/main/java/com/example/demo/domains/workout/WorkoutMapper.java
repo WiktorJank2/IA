@@ -13,12 +13,12 @@ public class WorkoutMapper {
     public WorkoutEntity toEntity(WorkoutDto dto) {
         WorkoutEntity entity = new WorkoutEntity();
 
-        if (dto.getId() != null && !dto.getId().isEmpty()) {
-            entity.setId(UUID.fromString(dto.getId()));
+        if (dto.getId() != null ) {
+            entity.setId(dto.getId());
         }
 
         entity.setName(dto.getName());
-        entity.setExercisesIds(dto.getExercisesIds());
+        entity.setExercises(dto.getExercises());
 
         return entity;
     }
@@ -26,9 +26,9 @@ public class WorkoutMapper {
     public WorkoutDto toDto(WorkoutEntity entity) {
         WorkoutDto dto = new WorkoutDto();
 
-        dto.setId(entity.getId().toString());
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
-        dto.setExercisesIds(entity.getExercisesIds());
+        dto.setExercises(entity.getExercises());
 
 
         return dto;

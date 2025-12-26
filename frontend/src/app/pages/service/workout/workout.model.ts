@@ -1,6 +1,11 @@
 export interface WorkoutDto{
-    id: string;
+    id?: string;
     name: string;
-    exercisesIds: string[];
+    exercises: {
+        id: string;
+        sets: number;
+        repetitions: number;
+    }[];
 
 }
+

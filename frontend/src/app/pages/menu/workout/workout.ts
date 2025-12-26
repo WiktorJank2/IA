@@ -1,43 +1,49 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
-import {IconField, IconFieldModule} from "primeng/iconfield";
-import {InputIcon, InputIconModule} from "primeng/inputicon";
-import {InputText, InputTextModule} from "primeng/inputtext";
-import {Button, ButtonDirective, ButtonModule} from "primeng/button";
-import {RouterLink} from "@angular/router";
-import {AutoComplete, AutoCompleteCompleteEvent} from "primeng/autocomplete";
-import {FormsModule} from "@angular/forms";
-import {CommonModule, CurrencyPipe, DatePipe} from "@angular/common";
-import {ProgressBar, ProgressBarModule} from "primeng/progressbar";
-import {Select, SelectModule} from "primeng/select";
-import {Slider, SliderModule} from "primeng/slider";
-import {Table, TableModule} from "primeng/table";
-import {Tag, TagModule} from "primeng/tag";
-import {MultiSelectModule} from "primeng/multiselect";
-import {ToggleButtonModule} from "primeng/togglebutton";
-import {ToastModule} from "primeng/toast";
-import {RatingModule} from "primeng/rating";
-import {RippleModule} from "primeng/ripple";
-import {ConfirmationService, MessageService} from "primeng/api";
-import {Customer, CustomerService} from "@/pages/service/customer.service";
-import {ProductService} from "@/pages/service/product.service";
-import {Image} from "primeng/image";
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
-interface expandedRows {
-    [key: string]: boolean;
-}
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SliderModule } from 'primeng/slider';
+import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToastModule } from 'primeng/toast';
+import { RatingModule } from 'primeng/rating';
+import { RippleModule } from 'primeng/ripple';
+import { TagModule } from 'primeng/tag';
+import { Table, TableModule  } from 'primeng/table';
+
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+
+import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
+import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
+import { WorkoutDto } from '@/pages/service/workout/workout.model';
+import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
+
 
 @Component({
     selector: 'app-plan',
     standalone: true,
+    templateUrl: './workout.html',
+    styleUrl: './workout.scss',
+    providers: [ConfirmationService, MessageService],
     imports: [
         CommonModule,
         FormsModule,
+        RouterLink,
 
-        TableModule,
         InputTextModule,
         ButtonModule,
         IconFieldModule,
         InputIconModule,
+        AutoCompleteModule,
         TagModule,
         ProgressBarModule,
         SliderModule,
@@ -47,92 +53,120 @@ interface expandedRows {
         ToastModule,
         RatingModule,
         RippleModule,
+        TableModule,
 
-        RouterLink,
         CurrencyPipe,
-        DatePipe,
-        AutoComplete,
-        // Image
-    ],
-    templateUrl: './workout.html',
-    styleUrl: './workout.scss',
-    providers: [ConfirmationService, MessageService, CustomerService, ProductService]
+        DatePipe
+    ]
 })
 export class Workout {
-    customers1: Customer[] = [];
 
-    statuses: any[] = [];
-
-    activityValues: number[] = [0, 100];
-
-    loading: boolean = true;
-
-    selectedAutoValue: any = null;
-
-    autoFilteredValue: any[] = [];
-
-    autoValue: any[] | undefined;
+    selectedAutoValue: string | null = null;
+    autoFilteredValue: string[] = [];
+    allExercises: ExerciseDto[] = [];
+    selectedExercises: ExerciseDto[] = [];
+    loading = true;
+    workoutName: string = '';
 
     @ViewChild('filter') filter!: ElementRef;
+    @ViewChild('dt1') dt1!: Table;
 
     constructor(
-        private customerService: CustomerService,
-        private productService: ProductService
-    ) {
-    }
-    filterCountry(event: AutoCompleteCompleteEvent) {
-        const filtered: any[] = [];
-        const query = event.query;
+        private exerciseFacade: ExerciseFacade,
+    private workoutFacade: WorkoutFacade,
+    private router: Router
+) {
+        this.exerciseFacade.fetchAllExercises();
 
-        for (let i = 0; i < (this.autoValue as any[]).length; i++) {
-            const country = (this.autoValue as any[])[i];
-            if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-                filtered.push(country);
+        this.exerciseFacade.exerciseState$.subscribe(exercises => {
+            this.allExercises = exercises;
+            this.loading = false;
+
+            console.log('Exercises from backend:', exercises);
+        });
+    }
+
+    onExerciseSelect(event: any) {
+        const selectedName: string = event.value;
+
+        console.log('Autocomplete select event:', event);
+        console.log('Selected name from autocomplete:', selectedName);
+
+        const selected = this.allExercises.find(
+            ex => ex.name.trim() === selectedName.trim()
+        );
+
+        console.log('Matched exercise object:', selected);
+
+        if (selected) {
+            if (!this.selectedExercises.includes(selected)) {
+                this.selectedExercises.push(selected);
+                console.log('Added to table:', selected);
+                console.log('Current selectedExercises array:', this.selectedExercises);
+            } else {
+                console.log('Exercise already in table');
             }
+        } else {
+            console.log('No matching exercise found!');
         }
 
-        this.autoFilteredValue = filtered;
+        this.selectedAutoValue = null;
     }
 
-    formatCurrency(value: number) {
-        return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+    filterExercise(event: any) {
+        const query = event.query.toLowerCase();
+
+        console.log('User typed:', event.query);
+
+        this.autoFilteredValue = this.allExercises
+            .filter(ex => ex.name.toLowerCase().includes(query))
+            .map(ex => ex.name);
+
+        console.log('Filtered exercises:', this.autoFilteredValue);
     }
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    onGlobalFilter(event: Event) {
+        const value = (event.target as HTMLInputElement).value;
+        console.log('Global filter value:', value);
+
+        this.dt1.filterGlobal(value, 'contains');
     }
 
-    clear(table: Table) {
-        table.clear();
-        this.filter.nativeElement.value = '';
+    clear() {
+        console.log('Clearing table and filters');
+
+        this.selectedExercises = [];
+        this.dt1.clear();
     }
-
-    getSeverity(status: string) {
-        switch (status) {
-            case 'qualified':
-            case 'instock':
-            case 'INSTOCK':
-            case 'DELIVERED':
-            case 'delivered':
-                return 'success';
-
-            case 'negotiation':
-            case 'lowstock':
-            case 'LOWSTOCK':
-            case 'PENDING':
-            case 'pending':
-                return 'warn';
-
-            case 'unqualified':
-            case 'outofstock':
-            case 'OUTOFSTOCK':
-            case 'CANCELLED':
-            case 'cancelled':
-                return 'danger';
-
-            default:
-                return 'info';
+    saveWorkout() {
+        if (!this.workoutName || this.selectedExercises.length === 0) {
+            console.log('Workout name or exercises missing');
+            return;
         }
+
+        const workoutPayload: WorkoutDto = {
+            name: this.workoutName,
+            exercises: this.selectedExercises.map(ex => ({
+                id: ex.id!,
+                sets: ex.sets || 3, // default to 3 if not set
+                repetitions: ex.repetitions || 10 // default to 10 if not set
+            }))
+        };
+
+        console.log('Workout payload:', workoutPayload);
+
+        this.workoutFacade.createWorkout(workoutPayload).subscribe({
+            next: () => {
+                console.log('Workout saved successfully');
+                this.router.navigate(['/']);
+            },
+            error: err => {
+                console.error('Failed to save workout', err);
+            }
+        });
+    }
+    removeExercise(index: number) {
+        this.selectedExercises.splice(index, 1);
+        console.log('Exercise removed, current list:', this.selectedExercises);
     }
 }
-

@@ -1,5 +1,6 @@
 package com.example.demo.repository.workout;
 
+import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -17,7 +18,7 @@ public class WorkoutEntity {
     @GeneratedValue
     private UUID id;
     private String name;
-    private List<String> exercisesIds;
+    private List<WorkoutExerciseDto> exercises;
 
 
     public WorkoutEntity() {}
@@ -38,12 +39,12 @@ public class WorkoutEntity {
         this.name = name;
     }
 
-    public List<String> getExercisesIds() {
-        return exercisesIds;
+    public List<WorkoutExerciseDto> getExercises() {
+        return exercises;
     }
 
-  public void setExercisesIds(List<String> exercisesIds) {
-        this.exercisesIds=exercisesIds;
+  public void setExercises(List<WorkoutExerciseDto> exercises) {
+        this.exercises=exercises;
   }
 
 }

@@ -3,19 +3,24 @@
         <div class="font-semibold text-xl"></div>
         <div class="flex flex-row gap-41">
             <div class="flex flex-row gap-2">
-                <div class="flex flex-col gap-2">Input Exercise Name
+                <div class="flex flex-col gap-2" >Input Exercise Name
                 <label for="firstname2"></label>
                 <input pInputText id="firstname2" type="text" placeholder="Name"
                        [style]="{'width':'385px','height': '30px', 'font-size': '15px' }"
+                       [(ngModel)]="name"
                 />
             </div>
             </div>
             <div class="flex flex-wrap gap-20">
                 <div class="flex flex-col gap-2">Select Exercised Muscle
                 <label for="lastname2"></label>
-                <p-select id="oveR" [(ngModel)]="dropdownItem" [options]="overallR" optionLabel="name" placeholder="Select Muslces Exercised"
-                          [style]="{'width':'350px','height': '50px', 'font-size': '18px' }"
-                ></p-select>
+                <p-multi-select [options]="muscleOptions"
+                                [(ngModel)]="selectedMuscles"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Select muscles"
+                                [style]="{ width: '350px', height: '50px', 'font-size': '16px' }">
+                ></p-multi-select>
             </div>
         </div>
             <div class="w-250px"></div>
@@ -34,26 +39,29 @@
                     <label for="description">Description</label>
                 </div>
                 <div>
-                    <textarea pTextarea id="description" cols="50" rows="30"></textarea>
+                    <textarea pTextarea id="description" cols="50" rows="30" [(ngModel)]="description"></textarea>
                 </div>
             </div>
             <div class="flex-direction: column w-0.3 h-full ">
                 <div class="flex flex-col gap-5 w-100 mb-20">
                     <label for="simR">Simplicity Rating</label>
-                    <p-select id="simR" [(ngModel)]="dropdownItem" [options]="simplicityR" optionLabel="name" placeholder="Select Rating" class="w-full"
+                    <p-select id="simR"  [options]="simplicityR" optionLabel="label" optionValue="value" placeholder="Select Rating" class="w-full"
                               [style]="{ 'height': '50px', 'font-size': '18px' }"
+                              [(ngModel)]="simplicityRating"
                     ></p-select>
                 </div>
                 <div class="flex flex-col gap-5 w-200px mb-20">
                     <label for="effR">Effectiveness Rating</label>
-                    <p-select id="effR" [(ngModel)]="dropdownItem" [options]="effectivenessR" optionLabel="name" placeholder="Select Rating" class="w-full"
+                    <p-select id="effR" [options]="effectivenessR" optionLabel="label" optionValue="value" placeholder="Select Rating" class="w-full"
                               [style]="{ 'height': '50px', 'font-size': '18px' }"
+                              [(ngModel)]="effectivenessRating"
                     ></p-select>
                 </div>
                 <div class="flex flex-col gap-5 w-10px mb-40">
                     <label for="oveR">Overall Rating</label>
-                    <p-select id="oveR" [(ngModel)]="dropdownItem" [options]="overallR" optionLabel="name" placeholder="Select Rating" class="w-full"
+                    <p-select id="oveR" [options]="overallR" optionLabel="label" optionValue="value" placeholder="Select Rating" class="w-full"
                               [style]="{ 'height': '50px', 'font-size': '18px' }"
+                              [(ngModel)]="overallRating"
                     ></p-select>
                 </div>
                 <div class="card flex justify-center ">
@@ -63,6 +71,7 @@
                         <p-button label="SAVE EXERCISE" rounded
                                   [style]="{'width': '200px', 'height': '40px', 'font-size': '18px' }"
                                   [routerLink]="['/']"
+                                  (click)="saveExercise()"
                         />
                     </div>
                 </div>

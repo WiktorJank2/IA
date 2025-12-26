@@ -15,7 +15,11 @@ export class ExerciseFacade {
     }
 
     fetchAllExercises(): void {
+        this.exerciseService.getAll().subscribe(data => {
+            console.log('Data from backend:', data);
+        });
         this.exerciseService.getAll()
+
             .pipe(
                 take(1),
                 tap(x => {

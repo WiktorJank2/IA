@@ -49,6 +49,7 @@ public class PlanFacade {
 
         plan.setName(planDto.getName());
         plan.setWorkoutIds(planDto.getWorkoutIds());
+        plan.setSelected(planDto.isSelected());
 
 
 

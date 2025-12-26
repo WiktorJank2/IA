@@ -3,18 +3,18 @@
     <p-splitter [style]="{ height: '800px' }" [panelSizes]="[50, 50]" [minSizes]="[10, 0]" styleClass="mb-8">
         <ng-template #panel>
             <div class="col flex items-center justify-center"></div>
-            <p-splitter layout="vertical" [panelSizes]="[10,50,10,10,10,10]">
+            <p-splitter layout="vertical" [panelSizes]="[20,40,10,10,10,10]">
                 <ng-template #panel>
                     <div class="font-semibold text-xl mb-6 justify-center"></div>
                     <div style="grow: 1;" class="flex justify-center ">
                         <div class="font-semibold text-xl mb-4 justify-center"></div>
-                        <p-iconfield iconPosition="left">
-                            <input pInputText type="text" placeholder="Search Exercise"
-                                   [style]="{ height: '30px', width:'600px'}"
-                            />
-                            <p-inputicon class="pi pi-search" />
-                        </p-iconfield>
-                    </div>
+                        <div class="font-semibold text-xl"></div>
+                        <p-autoComplete
+                            [(ngModel)]="selectedAutoValue"
+                            [suggestions]="autoFilteredValue"
+                            (completeMethod)="filterExercise($event)"
+                            placeholder="SEARCH EXERCISES">
+                        </p-autoComplete>                    </div>
 
                 </ng-template>
                 <ng-template #panel>
