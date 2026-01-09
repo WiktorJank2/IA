@@ -1,8 +1,11 @@
 package com.example.demo.repository.exercise;
 
+import com.example.demo.repository.workout.WorkoutEntity;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -13,15 +16,14 @@ public class ExerciseEntity {
     @Id
     @GeneratedValue
     private UUID id;
+
+
     private String name;
     private String description;
     private List<String> muscles;
     private int difficultyRating;
     private int effectivenessRating;
     private int overallRating;
-    private double weight;
-    private int numberOfReps;
-    private int numberOfSets;
 
     public ExerciseEntity() {}
 
@@ -71,24 +73,6 @@ public class ExerciseEntity {
     }
     public void setOverallRating(int overallRating) {
         this.overallRating = overallRating;
-    }
-    public double getWeight() {
-        return weight;
-    }
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-    public int getNumberOfReps() {
-        return numberOfReps;
-    }
-    public void setNumberOfReps(int numberOfReps) {
-        this.numberOfReps = numberOfReps;
-    }
-    public int getNumberOfSets() {
-        return numberOfSets;
-    }
-    public void setNumberOfSets(int numberOfSets) {
-        this.numberOfSets = numberOfSets;
     }
 
 }

@@ -53,9 +53,7 @@ public class ExerciseFacade {
         exercise.setDifficultyRating(exerciseDto.getDifficultyRating());
         exercise.setEffectivenessRating(exerciseDto.getEffectivenessRating());
         exercise.setOverallRating(exerciseDto.getOverallRating());
-        exercise.setWeight(exercise.getWeight());
-        exercise.setNumberOfReps(exerciseDto.getNumberOfReps());
-        exercise.setNumberOfSets(exerciseDto.getNumberOfSets());
+
 
 
         ExerciseEntity exerciseEntity = exerciseRepository.save(exercise);

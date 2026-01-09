@@ -1,12 +1,15 @@
 package com.example.demo.repository.workout;
 
 import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.example.demo.repository.exercise.ExerciseEntity;
+import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -17,8 +20,9 @@ public class WorkoutEntity {
     @Id
     @GeneratedValue
     private UUID id;
+
+
     private String name;
-    private List<WorkoutExerciseDto> exercises;
 
 
     public WorkoutEntity() {}
@@ -39,12 +43,5 @@ public class WorkoutEntity {
         this.name = name;
     }
 
-    public List<WorkoutExerciseDto> getExercises() {
-        return exercises;
-    }
-
-  public void setExercises(List<WorkoutExerciseDto> exercises) {
-        this.exercises=exercises;
-  }
 
 }

@@ -1,9 +1,6 @@
 package com.example.demo.repository.workoutExercise;
 
-import com.example.demo.controllers.exercise.ExerciseDto;
-import com.example.demo.controllers.workout.WorkoutDto;
-import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
-import com.example.demo.entities.WorkoutExercise;
+
 import com.example.demo.repository.exercise.ExerciseEntity;
 import com.example.demo.repository.workout.WorkoutEntity;
 import jakarta.persistence.*;
@@ -13,7 +10,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "workouts")
+@Table(name = "workoutExercises")
 public class WorkoutExerciseEntity {
 
     @Id
@@ -21,11 +18,11 @@ public class WorkoutExerciseEntity {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "exercises")
+    @JoinColumn(name = "exercise")
     private ExerciseEntity exercise;
 
     @ManyToOne
-    @JoinColumn(name = "workouts")
+    @JoinColumn(name = "workout")
     private WorkoutEntity workout;
 
     private int sets;

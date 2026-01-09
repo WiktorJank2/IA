@@ -23,9 +23,7 @@ public class ExerciseMapper {
         entity.setDifficultyRating(dto.getDifficultyRating());
         entity.setEffectivenessRating(dto.getEffectivenessRating());
         entity.setOverallRating(dto.getOverallRating());
-        entity.setNumberOfSets(dto.getNumberOfSets());
-        entity.setNumberOfReps(dto.getNumberOfReps());
-        entity.setWeight(dto.getWeight());
+
 
         return entity;
     }
@@ -40,9 +38,7 @@ public class ExerciseMapper {
         dto.setDifficultyRating(entity.getDifficultyRating());
         dto.setEffectivenessRating(entity.getEffectivenessRating());
         dto.setOverallRating(entity.getOverallRating());
-        dto.setWeight(entity.getWeight());
-        dto.setNumberOfReps(entity.getNumberOfReps());
-        dto.setNumberOfSets(entity.getNumberOfSets());
+
 
         return dto;
     }

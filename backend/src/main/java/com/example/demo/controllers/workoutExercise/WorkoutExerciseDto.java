@@ -2,7 +2,7 @@ package com.example.demo.controllers.workoutExercise;
 
 import com.example.demo.controllers.exercise.ExerciseDto;
 import com.example.demo.controllers.workout.WorkoutDto;
-import com.example.demo.entities.WorkoutExercise;
+import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
 
 import java.util.UUID;
 

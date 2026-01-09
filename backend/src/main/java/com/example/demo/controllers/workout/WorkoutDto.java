@@ -1,6 +1,6 @@
 package com.example.demo.controllers.workout;
 
-import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
+import com.example.demo.controllers.exercise.ExerciseDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,14 +9,12 @@ import java.util.UUID;
 public class WorkoutDto {
     private UUID id;
     private String name;
-    private List<WorkoutExerciseDto> exercises; // store exercises with sets & reps
 
     public WorkoutDto() {}
 
-    public WorkoutDto(UUID id, String name, List<WorkoutExerciseDto> exercises) {
+    public WorkoutDto(UUID id, String name) {
         this.id = id;
         this.name = name;
-        this.exercises = exercises;
     }
 
 
@@ -36,12 +34,5 @@ public class WorkoutDto {
         this.name = name;
     }
 
-    public List<WorkoutExerciseDto> getExercises() {
-        return exercises;
-    }
-
-    public void setExercises(List<WorkoutExerciseDto> exercises) {
-        this.exercises = exercises;
-    }
 }
 
