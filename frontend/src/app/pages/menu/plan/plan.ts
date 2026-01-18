@@ -54,6 +54,10 @@ export class Plan {
         });
     }
 
+    isRestSelected(index: number): boolean {
+        return this.selectedWorkouts[index]?.name === 'Rest';
+    }
+
     savePlan() {
         const selectedIds: (string | undefined)[] = this.selectedWorkouts.map(w => w?.id);
 

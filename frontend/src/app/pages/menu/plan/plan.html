@@ -11,22 +11,14 @@
             </div>
         <div class="flex justify-center">
             <div class="flex flex-row gap-2 mb-2">
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
-                <p-button label=""
-                          [style]="{'width': '200px', 'height': '50px', 'font-size': '18px' }"></p-button>
+                @for (workout of selectedWorkouts; let i = $index; track i) {
+                    <p-button
+                        label=""
+                        [severity]="isRestSelected(i) ? 'success' : 'danger'"
+                        [style]="{'width': '200px', 'height': '50px', 'font-size': '18px'}">
+                    </p-button>
+                }
             </div>
-
         </div>
         <div class="flex justify-center">
             <div class="flex flex-col gap-4">
