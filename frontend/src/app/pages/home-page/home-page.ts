@@ -25,7 +25,8 @@ import { FormsModule } from '@angular/forms';
         Image,
         RouterLink,
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        Image
     ],
     standalone: true,
   templateUrl: './home-page.html',
