@@ -29,6 +29,7 @@ interface expandedRows {
 
 @Component({
   selector: 'app-my-plans',
+    standalone: true,
     imports: [
         TableModule,
         MultiSelectModule,
@@ -57,6 +58,7 @@ export class MyPlans {
 
     statuses: any[] = [];
 
+    selectedPlan: PlanDto | null = null;
 
     plans: PlanDto[] = [];
     loading = false;
@@ -71,6 +73,15 @@ export class MyPlans {
 
     onGlobalFilter(event: Event) {
         this.dt1.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
+
+    selectPlan(plan: PlanDto): void {
+        // unselect all plans locally
+        this.plans.forEach(p => p.selected = false);
+
+        // select the clicked one
+        plan.selected = true;
+        this.selectedPlan = plan;
     }
 
     clear() {

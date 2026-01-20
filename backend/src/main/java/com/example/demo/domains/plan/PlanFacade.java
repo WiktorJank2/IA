@@ -31,6 +31,7 @@ public class PlanFacade {
                 .toList();
     }
 
+
     public PlanDto addPlans(PlanDto planDto) {
         PlanEntity planEntity = this.planMapper.toEntity(planDto);
         PlanEntity savedEntity = this.planRepository.save(planEntity);
@@ -50,6 +51,7 @@ public class PlanFacade {
         plan.setName(planDto.getName());
         plan.setWorkoutIds(planDto.getWorkoutIds());
         plan.setSelected(planDto.isSelected());
+        plan.setCurrent(planDto.isCurrent());
 
 
 

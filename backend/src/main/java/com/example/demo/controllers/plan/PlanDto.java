@@ -7,14 +7,17 @@ public class PlanDto {
     private String name;
     private List<String> workoutIds;
     private boolean selected;
+    private boolean current;
 
     public PlanDto() {
     }
 
-    public PlanDto(String id, String name, List<String> workoutIds) {
+    public PlanDto(String id, String name, List<String> workoutIds,  boolean selected, boolean current) {
         this.id = id;
         this.name = name;
         this.workoutIds = workoutIds;
+        this.selected = selected;
+        this.current = current;
     }
 
     public String getId() {
@@ -43,5 +46,11 @@ public class PlanDto {
     }
     public boolean isSelected() {
         return selected;
+    }
+    public void setCurrent(boolean current) {
+        this.current = current;
+    }
+    public boolean isCurrent() {
+        return current;
     }
 }

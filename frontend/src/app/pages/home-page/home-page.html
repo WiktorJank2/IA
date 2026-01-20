@@ -7,12 +7,13 @@
                 <ng-template #panel>
                     <div class="font-semibold text-xl mb-6 justify-center"></div>
                     <div style="grow: 1;" class="flex justify-center ">
-                        <div class="font-semibold text-xl mb-4 justify-center"></div>
-                        <div class="font-semibold text-xl"></div>
+                        <div class="font-semibold text-xl justify-center"></div>
                         <p-autoComplete
                             [(ngModel)]="selectedAutoValue"
                             [suggestions]="autoFilteredValue"
                             (completeMethod)="filterExercise($event)"
+                            [style]="{ width: '100%' }"
+                            [inputStyle]="{ width: '80%', height: '40px', 'font-size': '15px' }"
                             placeholder="SEARCH EXERCISES">
                         </p-autoComplete>                    </div>
 

@@ -40,4 +40,5 @@ public class PlanController {
         planFacade.deletePlan(id);
         return "ok";
     }
+    
 }

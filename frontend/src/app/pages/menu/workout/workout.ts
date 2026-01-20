@@ -3,7 +3,7 @@ import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { AutoCompleteModule } from 'primeng/autocomplete';
+import { AutoComplete, AutoCompleteModule } from 'primeng/autocomplete';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -56,7 +56,9 @@ import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
         TableModule,
 
         CurrencyPipe,
-        DatePipe
+        DatePipe,
+        AutoComplete,
+        AutoComplete
     ]
 })
 export class Workout {

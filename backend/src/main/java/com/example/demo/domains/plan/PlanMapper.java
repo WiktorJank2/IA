@@ -20,6 +20,7 @@ public class PlanMapper {
         entity.setName(dto.getName());
         entity.setWorkoutIds(dto.getWorkoutIds());
         entity.setSelected(dto.isSelected());
+        entity.setCurrent(dto.isCurrent());
 
         return entity;
     }
@@ -31,6 +32,7 @@ public class PlanMapper {
         dto.setName(entity.getName());
         dto.setWorkoutIds(entity.getWorkoutIds());
         dto.setSelected(entity.isSelected());
+        dto.setCurrent(entity.isCurrent());
 
         return dto;
     }

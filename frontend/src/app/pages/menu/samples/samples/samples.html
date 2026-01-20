@@ -11,8 +11,8 @@
             [showGridlines]="true"
             [paginator]="true"
             [globalFilterFields]="['name']"
-            responsiveLayout="scroll"
-        >
+            responsiveLayout="scroll">
+
             <ng-template #caption>
                 <div class="flex justify-between items-center flex-column sm:flex-row">
                     <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear()"></button>
@@ -29,13 +29,22 @@
                 <tr>
                     <th>Name</th>
                     <th>Number of Workouts</th>
+                    <th>Select plan</th>
                 </tr>
             </ng-template>
 
             <ng-template #body let-plan>
                 <tr>
                     <td>{{ plan.name }}</td>
-                    <td>{{ plan.workoutIds?.length || 0 }}</td>
+                    <td>{{ getActiveWorkoutCount(plan) }}
+                    </td>
+                    <td class="text-center">
+                        <p-checkbox
+                            binary="true"
+                            [ngModel]="plan.selected"
+                            (onChange)="onCheckboxChange($event, plan)">
+                        </p-checkbox>
+                    </td>
                 </tr>
             </ng-template>
 

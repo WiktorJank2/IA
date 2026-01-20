@@ -19,6 +19,8 @@ public class PlanEntity {
     private String name;
     private List<String> workoutIds;
     private boolean selected;
+    private boolean current;
+
 
     public PlanEntity() {}
 
@@ -49,5 +51,8 @@ public class PlanEntity {
     public boolean isSelected() {return selected;}
 
     public void setSelected(boolean selected) {this.selected = selected;}
+
+    public boolean isCurrent() {return current;}
+    public void setCurrent(boolean current) {this.current = current;}
 
 }

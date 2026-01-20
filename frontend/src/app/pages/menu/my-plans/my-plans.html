@@ -29,16 +29,34 @@
                         <p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter>
                     </div>
                 </th>
+                <th style="width: 10rem; text-align: center">
+                    Current plan
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-plan>
+            <tr>
+                <td>
+                    {{ plan.name }}
+                </td>
+
+                <td class="text-center">
+                    <p-button
+                        [label]="selectedPlan?.id === plan.id ? 'Selected' : 'Select'"
+                        [severity]="selectedPlan?.id === plan.id ? 'success' : 'secondary'"
+                        (click)="selectPlan(plan)">
+                    </p-button>
+                </td>
             </tr>
         </ng-template>
         <ng-template #emptymessage>
             <tr>
-                <td colspan="8">No customers found.</td>
+                <td colspan="8">No plans selected.</td>
             </tr>
         </ng-template>
         <ng-template #loadingbody>
             <tr>
-                <td colspan="8">Loading customers data. Please wait.</td>
+                <td colspan="8">Loading plans. Please wait.</td>
             </tr>
         </ng-template>
     </p-table>

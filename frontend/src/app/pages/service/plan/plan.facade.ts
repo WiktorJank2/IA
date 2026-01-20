@@ -63,6 +63,10 @@ export class PlanFacade {
         );
     }
 
+    setPlanSelected(planId: string, selected: boolean) {
+        return this.planService.setSelected(planId, selected);
+    }
+
     deletePlan(id: string): Observable<PlanDto> {
         return this.planService.delete(id).pipe(
             take(1),
