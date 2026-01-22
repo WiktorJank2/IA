@@ -19,7 +19,9 @@ public class ExerciseDto {
     public ExerciseDto() {
     }
 
-    public ExerciseDto(UUID id, String name, String description, List<String> muscles, int difficultyRating, int effectivenessRating, int overallRating,  double weight, int numberOfReps, int numberOfSets) {
+    public ExerciseDto(UUID id, String name, String description,
+                       List<String> muscles, int difficultyRating, int effectivenessRating,
+                       int overallRating,  double weight, int numberOfReps, int numberOfSets) {
         this.id = id;
         this.name = name;
         this.description = description;

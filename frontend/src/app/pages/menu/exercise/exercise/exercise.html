@@ -1,7 +1,7 @@
 <div class="flex mt-8">
     <div class="card flex flex-col gap-6 w-full h-230">
         <div class="font-semibold text-xl"></div>
-        <div class="flex flex-row gap-41">
+        <div class="flex flex-row gap-20">
             <div class="flex flex-row gap-2">
                 <div class="flex flex-col gap-2" >Input Exercise Name
                 <label for="firstname2"></label>
@@ -12,7 +12,7 @@
             </div>
             </div>
             <div class="flex flex-wrap gap-20">
-                <div class="flex flex-col gap-2">Select Exercised Muscle
+                <div class="flex flex-col gap-2">Select Exercised Muscles
                 <label for="lastname2"></label>
                 <p-multi-select [options]="muscleOptions"
                                 [(ngModel)]="selectedMuscles"
@@ -24,16 +24,15 @@
             </div>
         </div>
             <div class="w-250px"></div>
-                <div class="flex flex-row gap-60">
-                    <div class="w-250px"></div>
-                    <p-button label="EXIT" rounded
-                              [style]="{'width': '80px', 'height': '40px', 'font-size': '18px' }"
-                              [routerLink]="['/']"
-                    />
+            <div class="w-250px"></div>
+            <div class="w-250px"></div>
+
+            <div class="flex justify-center text-center">
+                <div class="font-semibold text-xl mb-4 gap-20">MUSCLES ENGAGED</div>
             </div>
         </div>
 
-        <div class="flex justify-content: space-evenly gap-40 w-full h-full">
+        <div class="flex justify-content: space-evenly gap-20 w-full h-full">
             <div class="flex-col gap-5 w-0.3">
                 <div>
                     <label for="description">Description</label>
@@ -42,7 +41,7 @@
                     <textarea pTextarea id="description" cols="50" rows="30" [(ngModel)]="description"></textarea>
                 </div>
             </div>
-            <div class="flex-direction: column w-0.3 h-full ">
+            <div class="flex-direction: column w-0.3 h-0.8 ">
                 <div class="flex flex-col gap-5 w-100 mb-20">
                     <label for="simR">Simplicity Rating</label>
                     <p-select id="simR"  [options]="simplicityR" optionLabel="label" optionValue="value" placeholder="Select Rating" class="w-full"
@@ -57,31 +56,31 @@
                               [(ngModel)]="effectivenessRating"
                     ></p-select>
                 </div>
-                <div class="flex flex-col gap-5 w-10px mb-40">
+                <div class="flex flex-col gap-5 w-10px mb-20">
                     <label for="oveR">Overall Rating</label>
                     <p-select id="oveR" [options]="overallR" optionLabel="label" optionValue="value" placeholder="Select Rating" class="w-full"
                               [style]="{ 'height': '50px', 'font-size': '18px' }"
                               [(ngModel)]="overallRating"
                     ></p-select>
                 </div>
-                <div class="card flex justify-center ">
-                    <div class="font-semibold text-xl"></div>
-                    <div class="flex flex-wrap gap-2">
-
+                <div class="card flex-col">
+                    <div class="flex justify-center gap-8 mb-10">
                         <p-button label="SAVE EXERCISE" rounded
                                   [style]="{'width': '200px', 'height': '40px', 'font-size': '18px' }"
-                                  [routerLink]="['/']"
                                   (click)="saveExercise()"
                         />
                     </div>
+                    <div class="flex justify-center gap-2">
+                        <p-button label="EXIT" rounded
+                                  [style]="{'width': '80px', 'height': '40px', 'font-size': '18px' }"
+                                  [routerLink]="['/']"
+                        />
+                    </div>
+
                 </div>
             </div>
-            <div class="flex justify-center gap-5 w-0.3">
-                <p-image
-                    src="https://primefaces.org/cdn/primeng/images/galleria/galleria10.jpg"
-                    alt="Image"
-                    width="400"
-                />
+            <div class="flex justify-center gap-5">
+                <img src="./assets/images/Body-diagram-empty.png" width="600" >
             </div>
         </div>
 

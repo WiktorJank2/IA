@@ -20,8 +20,6 @@ public class WorkoutEntity {
     @Id
     @GeneratedValue
     private UUID id;
-
-
     private String name;
 
 

@@ -15,7 +15,7 @@ import { MultiSelect } from 'primeng/multiselect';
 
 
 @Component({
-  selector: 'app-exercise',
+    selector: 'app-exercise',
     imports: [
         InputText,
         Select,
@@ -26,8 +26,9 @@ import { MultiSelect } from 'primeng/multiselect';
         Image,
         MultiSelect
     ],
-  templateUrl: './exercise.html',
-  styleUrl: './exercise.scss'
+    templateUrl: './exercise.html',
+    standalone: true,
+    styleUrl: './exercise.scss'
 })
 export class Exercise {
     name = '';

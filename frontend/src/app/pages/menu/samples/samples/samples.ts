@@ -12,12 +12,15 @@ import { FormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { take } from 'rxjs/operators';
 
 
 
-interface Plan {
-    workoutIds?: { name: string }[];
+export interface Plan {
+    id: string;
+    name: string;
+    workoutIds: string[];
+    selected: boolean;
+    current: boolean;
 }
 
 @Component({
@@ -60,7 +63,8 @@ export class Samples implements OnInit {
 
         // Subscribe to facade, but copy values locally
         this.planFacade.planState$.subscribe(plansFromFacade => {
-            this.plans = [...plansFromFacade]; // new array for UI
+            this.plans = [...plansFromFacade]
+                .sort((a, b) => (b.selected ? 1 : 0) - (a.selected ? 1 : 0)); // selected first
             this.loading = false;
         });
 
@@ -74,15 +78,15 @@ export class Samples implements OnInit {
         this.dt1.filterGlobal(value, 'contains');
     }
 
-    getActiveWorkoutCount(plan: any): number {
+    getActiveWorkoutCount(plan: Plan): number {
         let count = 0;
 
-        if (!plan.workouts) {
+        if (!plan.workoutIds) {
             return 0;
         }
 
         for (const id of plan.workoutIds) {
-            if (id !== this.restWorkoutId) {
+            if (id !== '318ce03f-b09f-4407-9cf2-2c2d011e8ab1') {
                 count++;
             }
         }
@@ -94,22 +98,39 @@ export class Samples implements OnInit {
         this.dt1.clear();
     }
 
+    savePlan() {
+        if (!this.plans || this.plans.length === 0) {
+            console.log('No plans to save');
+            return;
+        }
+
+        for (let plan of this.plans) {
+            console.log('Saving plan:', plan.id, plan.selected);
+
+            this.planFacade.updatePlan(plan.id!, plan).subscribe({
+                next: (returnedPlan) => {
+                    // Update local state with what the backend actually saved
+                    const index = this.plans.findIndex(p => p.id === returnedPlan.id);
+                    if (index !== -1) {
+                        this.plans[index] = returnedPlan;
+                    }
+                    console.log('Plan saved:', returnedPlan.id);
+                },
+                error: (err) => {
+                    console.error('Failed to save plan', plan.id, err);
+                }
+            });
+        }
+    }
 
     onCheckboxChange(event: any, plan: PlanDto) {
         const checked = event.checked;
 
         const index = this.plans.findIndex(p => p.id === plan.id);
         if (index === -1) return;
-
-        // 1️⃣ Optimistically update local array
+        console.log('Updating plan:', plan.id, plan);
+        // Update the local plan.selected only
         this.plans[index] = { ...plan, selected: checked };
-
-        // 2️⃣ Update backend via facade
-        this.planFacade.setPlanSelected(plan.id!, checked).subscribe({
-            error: () => {
-                // Rollback if server fails
-                this.plans[index] = { ...plan, selected: !checked };
-            }
-        });
     }
+
 }

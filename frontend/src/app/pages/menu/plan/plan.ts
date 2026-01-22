@@ -39,6 +39,7 @@ export class Plan {
     planName: string = '';
     workoutlist: WorkoutDto[] = [];
     selected: boolean = false;
+    current: boolean = false;
 
 
     constructor(
@@ -71,7 +72,8 @@ export class Plan {
             id: '',
             name: this.planName,
             workoutIds: selectedIds as string[],
-            selected: this.selected
+            selected: this.selected,
+            current: this.current
         };
 
         console.log('Saving plan:', plan);

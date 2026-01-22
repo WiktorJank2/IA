@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200") // allow Angular dev server
 @RestController
 @RequestMapping("/plans")
 public class PlanController {

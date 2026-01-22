@@ -3,5 +3,6 @@ export interface PlanDto{
     name: string;
     workoutIds: string[];
     selected: boolean;
+    current: boolean;
 
 }

@@ -1,20 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import {Panel} from "primeng/panel";
-import {Splitter} from "primeng/splitter";
-import {Button} from "primeng/button";
-import {IconField} from "primeng/iconfield";
-import {InputIcon} from "primeng/inputicon";
-import {InputText} from "primeng/inputtext";
-import {Image} from "primeng/image";
+import { Panel } from "primeng/panel";
+import { Splitter } from "primeng/splitter";
+import { Button } from "primeng/button";
+import { IconField } from "primeng/iconfield";
+import { InputIcon } from "primeng/inputicon";
+import { InputText } from "primeng/inputtext";
+import { Image } from "primeng/image";
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import {RouterLink} from "@angular/router";
+import { RouterLink } from "@angular/router";
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
-import { FormsModule } from '@angular/forms';
+import { WorkoutDto } from '@/pages/service/workout/workout.model';
+import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
+import { PlanDto } from '@/pages/service/plan/plan.model';
+import { PlanFacade } from '@/pages/service/plan/plan.facade';
+
+import { ButtonModule } from 'primeng/button';
 
 @Component({
-  selector: 'app-home-page',
-
+    selector: 'app-home-page',
+    standalone: true,
+    templateUrl: './home-page.html',
+    styleUrls: ['./home-page.scss'],
     imports: [
         Panel,
         Splitter,
@@ -26,37 +36,53 @@ import { FormsModule } from '@angular/forms';
         RouterLink,
         FormsModule,
         AutoCompleteModule,
-        Image
-    ],
-    standalone: true,
-  templateUrl: './home-page.html',
-  styleUrl: './home-page.scss'
+        ButtonModule,
+        CommonModule
+    ]
 })
-export class HomePage {
+export class HomePage implements OnInit {
     autoValue: any[] | undefined;
     selectedAutoValue: string | null = null;
     autoFilteredValue: string[] = [];
     allExercises: ExerciseDto[] = [];
 
-    constructor(private exerciseFacade: ExerciseFacade) {
-        // Fetch exercises from the backend
-        this.exerciseFacade.fetchAllExercises();
+    workoutsMap: Map<string, WorkoutDto> = new Map();
+    currentPlan: PlanDto | null = null;
 
-        // Subscribe to the BehaviorSubject and store the exercises
+    constructor(
+        private exerciseFacade: ExerciseFacade,
+        private planFacade: PlanFacade,
+        private workoutFacade: WorkoutFacade
+    ) {}
+
+    ngOnInit() {
+        // Fetch exercises
+        this.exerciseFacade.fetchAllExercises();
         this.exerciseFacade.exerciseState$.subscribe(exercises => {
             this.allExercises = exercises;
-            console.log('Exercises from backend:', exercises); // <-- log here
+            console.log('Exercises from backend:', exercises);
+        });
+
+        // Fetch workouts
+        this.workoutFacade.fetchAllWorkouts();
+        this.workoutFacade.workoutState$.subscribe(workouts => {
+            this.workoutsMap = new Map(workouts.map(w => [w.id!, w]));
+            console.log('Workouts map:', this.workoutsMap);
+        });
+
+        // Fetch plans
+        this.planFacade.fetchAllPlans();
+        this.planFacade.planState$.subscribe(plans => {
+            console.log('All plans:', plans);
+            this.currentPlan = plans.find(p => p.current === true) ?? null;
+            console.log('Current plan:', this.currentPlan);
         });
     }
 
     filterExercise(event: any) {
         const query = event.query.toLowerCase();
-
-        // Filter and map to strings so the autocomplete input displays correctly
         this.autoFilteredValue = this.allExercises
             .filter(ex => ex.name.toLowerCase().includes(query))
             .map(ex => ex.name);
-
-        console.log('Filtered exercises:', this.autoFilteredValue); // optional, for debugging
     }
 }

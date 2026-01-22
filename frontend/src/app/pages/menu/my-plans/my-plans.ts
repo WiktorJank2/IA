@@ -22,6 +22,9 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
 import { PlanDto } from '@/pages/service/plan/plan.model';
+import { CheckboxModule } from 'primeng/checkbox';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { Plan } from '../samples/samples/samples';
 
 interface expandedRows {
     [key: string]: boolean;
@@ -47,7 +50,9 @@ interface expandedRows {
         RatingModule,
         RippleModule,
         IconFieldModule,
-        RouterLink
+        RouterLink,
+        CheckboxModule,
+        RadioButtonModule
     ],
   templateUrl: './my-plans.html',
   styleUrl: './my-plans.scss',
@@ -62,7 +67,9 @@ export class MyPlans {
 
     plans: PlanDto[] = [];
     loading = false;
-
+    selectedPlans: PlanDto[] = [];
+    currentPlanId: string | null = null;
+    currentId: string | null = null;
 
     constructor(
         private customerService: CustomerService,
@@ -72,39 +79,72 @@ export class MyPlans {
     }
 
     onGlobalFilter(event: Event) {
-        this.dt1.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+        const value = (event.target as HTMLInputElement).value;
+        this.dt1.filterGlobal(value, 'contains');
     }
 
-    selectPlan(plan: PlanDto): void {
-        // unselect all plans locally
-        this.plans.forEach(p => p.selected = false);
+    getActiveWorkoutCount(plan: Plan): number {
+        let count = 0;
 
-        // select the clicked one
-        plan.selected = true;
-        this.selectedPlan = plan;
+        if (!plan.workoutIds) {
+            return 0;
+        }
+
+        for (const id of plan.workoutIds) {
+            if (id !== '318ce03f-b09f-4407-9cf2-2c2d011e8ab1') {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    onCurrentChange(selectedPlan: PlanDto) {
+        this.currentPlanId = selectedPlan.id!;
+
+        this.selectedPlans = this.selectedPlans.map(plan => ({
+            ...plan,
+            current: plan.id === selectedPlan.id
+        }));
+    }
+
+    savePlan() {
+        console.log('Plans at save time:', this.selectedPlans);
+
+        if (!this.selectedPlans) {
+            console.log('plans is undefined');
+            return;
+        }
+
+        if (this.selectedPlans.length === 0) {
+            console.log('plans array is empty');
+            return;
+        }
+
+        for (let plan of this.selectedPlans) {
+            this.planFacade.updatePlan(plan.id!, plan).subscribe({
+                next: () => console.log('Plan saved:', plan.id),
+                error: err => console.error('Failed to save plan', plan.id, err)
+            });
+        }
     }
 
     clear() {
         this.dt1.clear();
     }
     ngOnInit() {
-        this.loadMyPlans();
-    }
-
-    loadMyPlans() {
-        this.loading = true;
-
-        this.planFacade.fetchAllPlans()
-
-        this.planFacade.planState$.subscribe({
-            next: (plans) => {
-                this.plans = plans.filter(p => p.selected === true);
-                this.loading = false;
-            },
-            error: (err: any) => {
-                console.error('Failed to load plans', err);
-                this.loading = false;
-            }
+        this.planFacade.planState$.subscribe(plans => {
+            this.selectedPlans = plans.filter(plan => plan.selected === true);
         });
+
+        const current = this.plans.find(p => p.current);
+        this.currentId = current ? current.id! : null;
+
+        const currentPlan = this.selectedPlans.find(p => p.current === true);
+        this.currentPlanId = currentPlan ? currentPlan.id! : null;
+
+        this.planFacade.fetchAllPlans();
     }
+
+
 }
