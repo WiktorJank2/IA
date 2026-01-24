@@ -1,14 +1,15 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
+import {BODY_POLYGONS, PolyDef, Pt} from "@/layout/body-canvas/body-polygons.data";
 
-type Pt = { x: number; y: number };
 
-type Poly = {
-    id: string;
-    points: Pt[];
+type ColorKey = 'red' | 'blue' | 'green';
+
+type PolyRender = PolyDef & {
     fill: string;
     stroke?: string;
     strokeWidth?: number;
+    visible: boolean;
 };
 
 @Component({
@@ -24,115 +25,118 @@ export class BodyCanvas implements AfterViewInit {
     // --- Konfiguracja / stan ---
     imgSrc = '/assets/images/Body-diagram-empty.png';
 
-    hover: Pt | null = null;   // aktualna pozycja kursora
-    collected: Pt[] = [];      // punkty zbierane kliknięciami (do stworzenia nowego wielokąta)
+    // 3 kolory (paleta)
+    private palette: Record<ColorKey, { fill: string; stroke: string }> = {
+        red:   { fill: 'rgba(255, 0, 0, 0.35)',   stroke: 'rgba(255, 0, 0, 0.9)' },
+        blue:  { fill: 'rgba(0, 120, 255, 0.30)', stroke: 'rgba(0, 120, 255, 0.9)' },
+        green: { fill: 'rgba(0, 200, 120, 0.25)', stroke: 'rgba(0, 200, 120, 0.85)' }
+    };
 
-    // WIELE wielokątów (Twoje dane przeniesione jako pierwszy element listy)
-    polygons: Poly[] = [
-        {
-            id: 'poly_1',
-            fill: 'rgba(255, 0, 0, 0.35)',
-            stroke: 'rgba(255, 0, 0, 0.9)',
-            strokeWidth: 2,
-            points: [
-                { x: 430, y: 164 },
-                { x: 424, y: 182 },
-                { x: 419, y: 192 },
-                { x: 413, y: 204 },
-                { x: 410, y: 210 },
-                { x: 420, y: 217 },
-                { x: 429, y: 226 },
-                { x: 435, y: 234 },
-                { x: 440, y: 243 },
-                { x: 445, y: 231 },
-                { x: 454, y: 225 },
-                { x: 466, y: 218 },
-                { x: 470, y: 213 },
-                { x: 475, y: 206 },
-                { x: 470, y: 195 },
-                { x: 463, y: 172 },
-                { x: 458, y: 161 },
-                { x: 452, y: 151 },
-                { x: 445, y: 159 },
-                { x: 435, y: 162 },
-                { x: 431, y: 159 }
-            ]
-        },
-        {
-            id: 'polly_2',
-            fill: 'rgba(255, 0, 0, 0.35)',
-            stroke: 'rgba(255, 0, 0, 0.9)',
-            strokeWidth: 2,
-            points:[
-                {
-                    "x": 44,
-                    "y": 80
-                },
-                {
-                    "x": 33,
-                    "y": 88
-                },
-                {
-                    "x": 38,
-                    "y": 107
-                },
-                {
-                    "x": 49,
-                    "y": 117
-                },
-                {
-                    "x": 63,
-                    "y": 120
-                },
-                {
-                    "x": 79,
-                    "y": 118
-                },
-                {
-                    "x": 94,
-                    "y": 102
-                },
-                {
-                    "x": 94,
-                    "y": 92
-                },
-                {
-                    "x": 85,
-                    "y": 83
-                },
-                {
-                    "x": 61,
-                    "y": 79
-                },
-                {
-                    "x": 54,
-                    "y": 79
-                }
-            ]
-        }
-    ];
+    /**
+     * MAPA: id -> kolor
+     * (Ustawiane w constructorze)
+     */
+    polygonColors: Record<string, ColorKey> = {};
 
+    /**
+     * Widoczność: które id mają być rysowane
+     * (Ustawiane w constructorze)
+     */
+    visibleIds = new Set<string>();
+
+    /**
+     * Lista do rysowania (geometria + styl + visible)
+     */
+    polygons: PolyRender[] = [];
+
+    // Hover i zbieranie punktów
+    hover: Pt | null = null;
+    collected: Pt[] = [];
+
+    // Canvas internals
     private ctx!: CanvasRenderingContext2D;
     private img = new Image();
     private dpr = 1;
+
+    // =========================================================
+    // CONSTRUCTOR – logika startowa: lewa-noga zielona itd.
+    // =========================================================
+    constructor() {
+        // Kolory per ID
+        this.polygonColors = {
+            'lewa-noga': 'green',
+            'prawa-noga': 'blue'
+            // inne: 'lewa-reka': 'red', ...
+        };
+
+        // Które elementy startowo pokazujemy
+        this.visibleIds = new Set(['lewa-noga', 'prawa-noga']);
+    }
 
     // --- Lifecycle ---
     ngAfterViewInit() {
         const canvas = this.canvasRef.nativeElement;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
+        // HiDPI (ostrość na retina)
         this.ensureHiDpi(canvas, this.ctx);
 
+        // tło
         this.img.src = this.imgSrc;
-        this.img.onload = () => this.redraw();
+        this.img.onload = () => {
+            this.rebuildPolygons();
+            this.redraw();
+        };
 
+        // (opcjonalnie) resize
         window.addEventListener('resize', () => {
             this.ensureHiDpi(canvas, this.ctx, true);
             this.redraw();
         });
     }
 
-    // --- Obsługa myszy ---
+    // --- Budowanie listy do rysowania ---
+    rebuildPolygons() {
+        this.polygons = BODY_POLYGONS.map(def => {
+            const colorKey = this.polygonColors[def.id] ?? 'red';
+            const c = this.palette[colorKey];
+
+            return {
+                ...def,
+                fill: c.fill,
+                stroke: c.stroke,
+                strokeWidth: 2,
+                visible: this.visibleIds.has(def.id)
+            };
+        });
+    }
+
+    // --- API logiki: pokaz/ukryj/zmien kolor po ID ---
+    showOnly(id: string) {
+        this.visibleIds = new Set([id]);
+        this.rebuildPolygons();
+        this.redraw();
+    }
+
+    showMany(ids: string[]) {
+        this.visibleIds = new Set(ids);
+        this.rebuildPolygons();
+        this.redraw();
+    }
+
+    hidePolygon(id: string) {
+        this.visibleIds.delete(id);
+        this.rebuildPolygons();
+        this.redraw();
+    }
+
+    setPolygonColor(id: string, color: ColorKey) {
+        this.polygonColors[id] = color;
+        this.rebuildPolygons();
+        this.redraw();
+    }
+
+    // --- Obsługa myszy (hover + zbieranie punktów) ---
     onMouseMove(evt: MouseEvent) {
         this.hover = this.getMousePos(evt);
         this.redraw();
@@ -155,38 +159,24 @@ export class BodyCanvas implements AfterViewInit {
         this.redraw();
     }
 
-    // Zapisz aktualnie zebrane punkty jako NOWY wielokąt
-    saveCollectedAsPolygon() {
+    /**
+     * (Opcjonalnie) Zapis zebranych punktów jako NOWY element runtime.
+     * Uwaga: nie zapisze do pliku .data.ts, tylko doda do polygons w pamięci.
+     */
+    saveCollectedAsRuntimePolygon(newId: string, color: ColorKey = 'red') {
         if (this.collected.length < 3) return;
 
-        const id = (crypto as any)?.randomUUID?.() ?? `poly_${Date.now()}`;
-
+        const c = this.palette[color];
         this.polygons.push({
-            id,
+            id: newId,
             points: this.collected.map(p => ({ ...p })),
-            fill: 'rgba(0, 120, 255, 0.30)',
-            stroke: 'rgba(0, 120, 255, 0.9)',
-            strokeWidth: 2
+            fill: c.fill,
+            stroke: c.stroke,
+            strokeWidth: 2,
+            visible: true
         });
 
         this.collected = [];
-        this.redraw();
-    }
-
-    // przykład przesuwania: przesuwa WSZYSTKIE wielokąty w lewo o 10px
-    nudgeAllLeft() {
-        this.polygons = this.polygons.map(poly => ({
-            ...poly,
-            points: poly.points.map(p => ({ x: p.x - 10, y: p.y }))
-        }));
-        this.redraw();
-    }
-
-    // opcjonalnie: przesuwaj konkretny wielokąt po id
-    movePolygon(id: string, dx: number, dy: number) {
-        const poly = this.polygons.find(p => p.id === id);
-        if (!poly) return;
-        poly.points = poly.points.map(pt => ({ x: pt.x + dx, y: pt.y + dy }));
         this.redraw();
     }
 
@@ -196,25 +186,22 @@ export class BodyCanvas implements AfterViewInit {
         const ctx = this.ctx;
         if (!ctx) return;
 
+        // rozmiar w jednostkach CSS (ważne przy HiDPI)
         const rect = canvas.getBoundingClientRect();
         const cssW = Math.round(rect.width);
         const cssH = Math.round(rect.height);
 
+        // tło
         ctx.clearRect(0, 0, cssW, cssH);
         ctx.drawImage(this.img, 0, 0, cssW, cssH);
 
-        // rysuj WSZYSTKIE wielokąty
+        // wielokąty (tylko widoczne)
         for (const poly of this.polygons) {
-            this.drawPolygon(
-                ctx,
-                poly.points,
-                poly.fill,
-                poly.stroke,
-                poly.strokeWidth ?? 1
-            );
+            if (!poly.visible) continue;
+            this.drawPolygon(ctx, poly.points, poly.fill, poly.stroke, poly.strokeWidth ?? 1);
         }
 
-        // punkty zebrane (markery)
+        // zebrane punkty (markery)
         for (const p of this.collected) {
             this.drawPoint(ctx, p, '#ffd166');
         }
@@ -306,6 +293,7 @@ export class BodyCanvas implements AfterViewInit {
         const canvas = this.canvasRef.nativeElement;
         const rect = canvas.getBoundingClientRect();
 
+        // ctx jest przeskalowany o dpr, więc rysujemy w „CSS px”.
         const scaleX = (canvas.width / this.dpr) / rect.width;
         const scaleY = (canvas.height / this.dpr) / rect.height;
 
