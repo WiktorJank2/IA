@@ -19,6 +19,7 @@ import { PlanDto } from '@/pages/service/plan/plan.model';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import {BodyCanvas} from "@/layout/body-canvas/body-canvas";
 
 @Component({
     selector: 'app-home-page',
@@ -37,7 +38,8 @@ import { ButtonModule } from 'primeng/button';
         FormsModule,
         AutoCompleteModule,
         ButtonModule,
-        CommonModule
+        CommonModule,
+        BodyCanvas
     ]
 })
 export class HomePage implements OnInit {

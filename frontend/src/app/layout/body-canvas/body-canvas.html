@@ -1,0 +1,12 @@
+<div class="canvas-wrap" style="display:inline-block; border:1px solid #ddd;">
+    <canvas
+        #myCanvas
+        width="600"
+        height="500"
+        (mousemove)="onMouseMove($event)"
+        (mouseleave)="onMouseLeave()"
+        (click)="addPoint()"
+    ></canvas>
+</div>
+<button style="border: solid 1px black" (click)="showBiceps()"> showBiceps </button>
+<button style="border: solid 1px black" (click)="changeColorBiceps()"> changeColorBiceps </button>
