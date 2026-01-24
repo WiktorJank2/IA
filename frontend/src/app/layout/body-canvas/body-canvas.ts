@@ -1,9 +1,9 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule, JsonPipe } from '@angular/common';
+import {Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
+import {CommonModule, JsonPipe} from '@angular/common';
 import {BODY_POLYGONS, PolyDef, Pt} from "@/layout/body-canvas/body-polygons.data";
 
 
-type ColorKey = 'red' | 'blue' | 'green';
+type ColorKey = 'red' | 'orange' | 'green';
 
 type PolyRender = PolyDef & {
     fill: string;
@@ -27,10 +27,11 @@ export class BodyCanvas implements AfterViewInit {
 
     // 3 kolory (paleta)
     private palette: Record<ColorKey, { fill: string; stroke: string }> = {
-        red:   { fill: 'rgba(255, 0, 0, 0.35)',   stroke: 'rgba(255, 0, 0, 0.9)' },
-        blue:  { fill: 'rgba(0, 120, 255, 0.30)', stroke: 'rgba(0, 120, 255, 0.9)' },
-        green: { fill: 'rgba(0, 200, 120, 0.25)', stroke: 'rgba(0, 200, 120, 0.85)' }
+        red: {fill: 'rgba(255, 0, 0, 0.35)', stroke: 'rgba(255, 0, 0, 0.9)'},
+        orange: {fill: 'rgba(255, 123, 0, 0.35)', stroke: 'rgba(255, 123, 0, 0.9)'},
+        green: {fill: 'rgba(0, 200, 120, 0.25)', stroke: 'rgba(0, 200, 120, 0.85)'}
     };
+
 
     /**
      * MAPA: id -> kolor
@@ -62,18 +63,27 @@ export class BodyCanvas implements AfterViewInit {
     // CONSTRUCTOR – logika startowa: lewa-noga zielona itd.
     // =========================================================
     constructor() {
-        // Kolory per ID
-        this.polygonColors = {
-            'lewa-noga': 'green',
-            'prawa-noga': 'blue'
-            // inne: 'lewa-reka': 'red', ...
-        };
-
         // Które elementy startowo pokazujemy
-        this.visibleIds = new Set(['lewa-noga', 'prawa-noga']);
+        this.visibleIds = new Set([]);
     }
 
-    // --- Lifecycle ---
+    dodajBiceps() {
+
+        this.showPolygon('biceps_1')
+        this.setPolygonColor('biceps_1', 'red')
+
+        this.showPolygon('biceps_2')
+        this.setPolygonColor('biceps_2', 'red')
+
+    }
+    zmienKolorBiceps() {
+
+        this.setPolygonColor('biceps_1', 'green')
+        this.setPolygonColor('biceps_2', 'green')
+
+    }
+
+        // --- Lifecycle ---
     ngAfterViewInit() {
         const canvas = this.canvasRef.nativeElement;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -129,6 +139,9 @@ export class BodyCanvas implements AfterViewInit {
         this.rebuildPolygons();
         this.redraw();
     }
+    showPolygon(id: string) {
+        this.visibleIds.add(id);
+    }
 
     setPolygonColor(id: string, color: ColorKey) {
         this.polygonColors[id] = color;
@@ -149,7 +162,7 @@ export class BodyCanvas implements AfterViewInit {
 
     addPoint() {
         if (!this.hover) return;
-        this.collected.push({ ...this.hover });
+        this.collected.push({...this.hover});
         this.redraw();
         console.log(this.collected)
     }
@@ -169,7 +182,7 @@ export class BodyCanvas implements AfterViewInit {
         const c = this.palette[color];
         this.polygons.push({
             id: newId,
-            points: this.collected.map(p => ({ ...p })),
+            points: this.collected.map(p => ({...p})),
             fill: c.fill,
             stroke: c.stroke,
             strokeWidth: 2,
@@ -321,4 +334,5 @@ export class BodyCanvas implements AfterViewInit {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(this.dpr, this.dpr);
     }
+
 }

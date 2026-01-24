@@ -1,7 +1,7 @@
 <div class="canvas-wrap" style="display:inline-block; border:1px solid #ddd;">
     <canvas
         #myCanvas
-        width="800"
+        width="600"
         height="500"
         (mousemove)="onMouseMove($event)"
         (mouseleave)="onMouseLeave()"
@@ -10,17 +10,8 @@
 </div>
 
 <div class="controls" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-<!--    <button type="button" (click)="saveCollectedAsPolygon()" [disabled]="collected.length < 3">-->
-<!--        Zapisz zebrane punkty jako element-->
-<!--    </button>-->
-
-    <button type="button" (click)="clearPoints()" [disabled]="collected.length === 0">
-        Wyczyść zebrane punkty
-    </button>
-
-<!--    <button type="button" (click)="nudgeAllLeft()">-->
-<!--        Przesuń wszystkie elementy w lewo (-10px)-->
-<!--    </button>-->
+    <button style="border: solid 1px black" (click)="dodajBiceps()"> dodaj biceps</button>
+    <button style="border: solid 1px black" (click)="zmienKolorBiceps()"> zmien kolor biceps</button>
 </div>
 
 <div class="coords" style="margin-top:8px;">
@@ -53,3 +44,4 @@
         <pre>{{ polygons | json }}</pre>
     </details>
 </div>
+
