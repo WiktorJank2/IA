@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 
+
 @Injectable({
     providedIn: 'root'
 })
 export class ExerciseService {
-
+    private baseUrl = 'http://localhost:8080/exercises';
     private readonly apiUrl = 'http://localhost:8080/exercises'; // backend url
 
     constructor(private http: HttpClient) {}
@@ -30,5 +31,9 @@ export class ExerciseService {
 
     delete(id: string): Observable<ExerciseDto> {
         return this.http.delete<ExerciseDto>(this.apiUrl + '/' + id);
+    }
+
+    getExercisesByWorkoutId(workoutId: string): Observable<ExerciseDto[]> {
+        return this.http.get<ExerciseDto[]>(`${this.baseUrl}/workout/${workoutId}`);
     }
 }

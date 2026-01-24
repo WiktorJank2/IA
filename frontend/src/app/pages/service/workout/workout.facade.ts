@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take, tap } from 'rxjs';
-
+import { HttpClient } from '@angular/common/http';
 import { WorkoutDto } from '@/pages/service/workout/workout.model';
 import { WorkoutService } from '@/pages/service/workout/workout.service';
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
-
 
 @Injectable({
     providedIn: 'root'
@@ -12,8 +11,10 @@ import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
 export class WorkoutFacade {
     workoutState$ = new BehaviorSubject<WorkoutDto[]>([])
     workoutByIdState$ = new BehaviorSubject<WorkoutDto | null>(null)
+    private baseUrl = 'http://localhost:8080/workouts';
+    workout: WorkoutDto | null = null;
 
-    constructor(private workoutService: WorkoutService) {}
+    constructor(private workoutService: WorkoutService, private http: HttpClient) {}
 
     fetchAllWorkouts(): void {
         this.workoutService.getAll()
@@ -80,5 +81,9 @@ export class WorkoutFacade {
                 }
             })
         );
+    }
+
+    getById(id: string): Observable<WorkoutDto> {
+        return this.http.get<WorkoutDto>(`${this.baseUrl}/workouts/${id}`);
     }
 }

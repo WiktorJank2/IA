@@ -10,6 +10,7 @@ import {Router} from "@angular/router";
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { MultiSelect } from 'primeng/multiselect';
+import { ActivatedRoute } from '@angular/router';
 
 
 
@@ -33,15 +34,16 @@ import { MultiSelect } from 'primeng/multiselect';
 export class Exercise {
     name = '';
     description = '';
-
+    exerciseId: string | null = null;
     selectedMuscles: string[] = [];
-    simplicityRating: number | null = null;
+    difficultyRating: number | null = null;
     effectivenessRating: number | null = null;
     overallRating: number | null = null;
 
     constructor(
         private exerciseFacade: ExerciseFacade,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute,
     ) {}
     muscleOptions = [
         { label: 'Abdominals', value: 'Abdominals' },
@@ -87,13 +89,33 @@ export class Exercise {
         { label: '5 / 5', value: 5 }
     ];
 
+    ngOnInit() {
+        this.exerciseId = this.route.snapshot.queryParamMap.get('id');
+
+        if (this.exerciseId) {
+            // EDIT MODE
+            this.exerciseFacade.getById(this.exerciseId).subscribe(exercise => {
+                this.fillForm(exercise);
+            });
+        }
+    }
+
     dropdownItem = null;
+
+    fillForm(exercise: ExerciseDto) {
+        this.name = exercise.name;
+        this.description = exercise.description;
+        this.selectedMuscles = exercise.muscles;
+        this.difficultyRating = exercise.difficultyRating;
+        this.effectivenessRating = exercise.effectivenessRating;
+        this.overallRating = exercise.overallRating;
+    }
 
     saveExercise() {
         if (
             !this.name ||
             !this.description ||
-            !this.simplicityRating ||
+            !this.difficultyRating ||
             !this.effectivenessRating ||
             !this.overallRating ||
             this.selectedMuscles.length === 0
@@ -107,17 +129,30 @@ export class Exercise {
             name: this.name,
             description: this.description,
             muscles: this.selectedMuscles,
-            difficultyRating: this.simplicityRating,
+            difficultyRating: this.difficultyRating,
             effectivenessRating: this.effectivenessRating,
             overallRating: this.overallRating
         };
 
         console.log('Exercise payload:', exercise);
 
-        this.exerciseFacade.createExercise(exercise).subscribe({
-            next: () => console.log('Exercise saved'),
-            error: err => console.error('Failed to save exercise', err)
-        });
-    }
+        if (this.exerciseId) {
+            //UPDATE
+            console.log('UPDATING exercise with id:', this.exerciseId);
+            console.log('Payload:', exercise);
 
+            this.exerciseFacade.updateExercise(this.exerciseId, exercise).subscribe({
+                next: () => this.router.navigate(['/']),
+                error: err => {
+                    console.error('Failed to update exercise', err);
+                }
+            });
+        } else {
+            //CREATE
+            this.exerciseFacade.createExercise(exercise).subscribe({
+                next: () => this.router.navigate(['/']),
+                error: err => console.error('Failed to create exercise', err)
+            });
+        }
+    }
 }

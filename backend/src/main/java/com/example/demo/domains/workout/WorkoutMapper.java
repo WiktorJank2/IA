@@ -18,7 +18,7 @@ public class WorkoutMapper {
         }
 
         entity.setName(dto.getName());
-
+        entity.setExercises(dto.getExercises());
 
         return entity;
     }
@@ -28,7 +28,7 @@ public class WorkoutMapper {
 
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-
+        dto.setExercises(entity.getExercises());
 
         return dto;
     }

@@ -7,10 +7,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 @Entity
@@ -21,7 +18,8 @@ public class WorkoutEntity {
     @GeneratedValue
     private UUID id;
     private String name;
-
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();;
 
     public WorkoutEntity() {}
 
@@ -41,5 +39,11 @@ public class WorkoutEntity {
         this.name = name;
     }
 
+    public List<WorkoutExerciseDto> getExercises() {
+        return workoutExercises;
+    }
+    public void setExercises(List<WorkoutExerciseDto> workoutExercises) {
+        this.workoutExercises = workoutExercises;
+    }
 
 }

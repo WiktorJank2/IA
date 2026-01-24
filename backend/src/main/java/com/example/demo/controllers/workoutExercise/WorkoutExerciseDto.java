@@ -11,7 +11,6 @@ public class WorkoutExerciseDto {
 
     private ExerciseDto exercise;
     private WorkoutDto workout;
-
     private int sets;
     private int reps;
     private double weight;

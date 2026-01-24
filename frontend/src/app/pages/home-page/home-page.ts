@@ -17,7 +17,7 @@ import { WorkoutDto } from '@/pages/service/workout/workout.model';
 import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
 import { PlanDto } from '@/pages/service/plan/plan.model';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
-
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
@@ -52,7 +52,8 @@ export class HomePage implements OnInit {
     constructor(
         private exerciseFacade: ExerciseFacade,
         private planFacade: PlanFacade,
-        private workoutFacade: WorkoutFacade
+        private workoutFacade: WorkoutFacade,
+        private router: Router
     ) {}
 
     ngOnInit() {
@@ -76,6 +77,17 @@ export class HomePage implements OnInit {
             console.log('All plans:', plans);
             this.currentPlan = plans.find(p => p.current === true) ?? null;
             console.log('Current plan:', this.currentPlan);
+        });
+    }
+
+    onExerciseSelected(event: any) {
+        const exerciseName = event.value;
+
+        const exercise = this.allExercises.find(e => e.name === exerciseName);
+        if (!exercise) return;
+
+        this.router.navigate(['/menu/exercise'], {
+            queryParams: { id: exercise.id }
         });
     }
 
