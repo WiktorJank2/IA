@@ -1,11 +1,11 @@
 import {Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
-import {JsonPipe} from "@angular/common";
+import {CommonModule, JsonPipe} from "@angular/common";
 
 type Pt = { x: number; y: number };
 
 @Component({
   selector: 'app-body-canvas',
-  imports: [JsonPipe],
+  imports: [JsonPipe, CommonModule],
   templateUrl: './body-canvas.html',
   styleUrl: './body-canvas.scss'
 })
@@ -20,92 +20,88 @@ export class BodyCanvas implements AfterViewInit {
     // przykładowy nieregularny wielokąt
     polygon: Pt[] = [
         {
-            "x": 357,
-            "y": 124
-        },
-        {
-            "x": 361,
-            "y": 134
-        },
-        {
-            "x": 364,
-            "y": 144
-        },
-        {
-            "x": 364,
-            "y": 153
-        },
-        {
-            "x": 364,
-            "y": 160
-        },
-        {
-            "x": 365,
-            "y": 169
-        },
-        {
-            "x": 372,
-            "y": 180
-        },
-        {
-            "x": 380,
-            "y": 189
-        },
-        {
-            "x": 386,
-            "y": 196
-        },
-        {
-            "x": 391,
-            "y": 201
-        },
-        {
-            "x": 399,
-            "y": 206
-        },
-        {
-            "x": 402,
-            "y": 208
-        },
-        {
-            "x": 413,
-            "y": 185
-        },
-        {
-            "x": 416,
-            "y": 178
-        },
-        {
-            "x": 424,
+            "x": 430,
             "y": 164
         },
         {
-            "x": 430,
-            "y": 153
+            "x": 424,
+            "y": 182
         },
         {
-            "x": 412,
-            "y": 137
+            "x": 419,
+            "y": 192
         },
         {
-            "x": 404,
-            "y": 128
+            "x": 413,
+            "y": 204
         },
         {
-            "x": 392,
-            "y": 124
+            "x": 410,
+            "y": 210
         },
         {
-            "x": 381,
-            "y": 124
+            "x": 420,
+            "y": 217
         },
         {
-            "x": 362,
-            "y": 119
+            "x": 429,
+            "y": 226
         },
         {
-            "x": 359,
-            "y": 117
+            "x": 435,
+            "y": 234
+        },
+        {
+            "x": 440,
+            "y": 243
+        },
+        {
+            "x": 445,
+            "y": 231
+        },
+        {
+            "x": 454,
+            "y": 225
+        },
+        {
+            "x": 466,
+            "y": 218
+        },
+        {
+            "x": 470,
+            "y": 213
+        },
+        {
+            "x": 475,
+            "y": 206
+        },
+        {
+            "x": 470,
+            "y": 195
+        },
+        {
+            "x": 463,
+            "y": 172
+        },
+        {
+            "x": 458,
+            "y": 161
+        },
+        {
+            "x": 452,
+            "y": 151
+        },
+        {
+            "x": 445,
+            "y": 159
+        },
+        {
+            "x": 435,
+            "y": 162
+        },
+        {
+            "x": 431,
+            "y": 159
         }
     ]
 
@@ -153,6 +149,7 @@ export class BodyCanvas implements AfterViewInit {
             this.collected.push({ ...this.hover });
             this.redraw();
         }
+        console.log(this.collected as [])
     }
 
     clearPoints() {
