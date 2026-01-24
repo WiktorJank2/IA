@@ -10,6 +10,7 @@ import {Router} from "@angular/router";
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { MultiSelect } from 'primeng/multiselect';
+import {BodyCanvas} from "@/layout/body-canvas/body-canvas";
 
 
 
@@ -24,7 +25,8 @@ import { MultiSelect } from 'primeng/multiselect';
         Button,
         RouterLink,
         Image,
-        MultiSelect
+        MultiSelect,
+        BodyCanvas
     ],
     templateUrl: './exercise.html',
     standalone: true,
