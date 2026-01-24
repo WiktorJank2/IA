@@ -1,0 +1,33 @@
+<div class="canvas-wrap" style="display:inline-block; border:1px solid #ddd;">
+    <canvas
+        #myCanvas
+        width="800"
+        height="500"
+        (mousemove)="onMouseMove($event)"
+        (mouseleave)="onMouseLeave()"
+        (click)="addPoint()"
+    ></canvas>
+</div>
+
+<div class="controls" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+    <button type="button" (click)="toggleColor()">Zmień kolor wypełnienia</button>
+    <button type="button" (click)="nudge()">Przesuń wielokąt +10px</button>
+    <button type="button" (click)="clearPoints()">Wyczyść zebrane punkty</button>
+</div>
+
+<div class="coords" style="margin-top:8px;">
+    <strong>Pozycja kursora:</strong>
+    x: {{ hover?.x ?? '-' }} | y: {{ hover?.y ?? '-' }}
+</div>
+
+<div class="points" style="margin-top:8px; display: flex">
+    <strong>Zebrane punkty (kliknij na canvas):</strong>
+    <code *ngIf="collected.length === 0">—</code>
+    <ul *ngIf="collected.length">
+        <li *ngFor="let p of collected; let i = index">#{{ i + 1 }}: ({{ p.x }}, {{ p.y }})</li>
+    </ul>
+    <ul *ngIf="collected.length">
+<!--        <li><pre>{{ collected | json }}</pre></li>-->
+        <li><pre>{{ collected | json }}</pre></li>
+    </ul>
+</div>
