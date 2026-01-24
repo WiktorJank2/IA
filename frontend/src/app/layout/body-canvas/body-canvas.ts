@@ -58,6 +58,7 @@ export class BodyCanvas implements AfterViewInit {
     private ctx!: CanvasRenderingContext2D;
     private img = new Image();
     private dpr = 1;
+    private adminMode = true
 
     // =========================================================
     // CONSTRUCTOR – logika startowa: lewa-noga zielona itd.
@@ -67,7 +68,7 @@ export class BodyCanvas implements AfterViewInit {
         this.visibleIds = new Set([]);
     }
 
-    dodajBiceps() {
+    showBiceps() {
 
         this.showPolygon('biceps_1')
         this.setPolygonColor('biceps_1', 'red')
@@ -76,7 +77,7 @@ export class BodyCanvas implements AfterViewInit {
         this.setPolygonColor('biceps_2', 'red')
 
     }
-    zmienKolorBiceps() {
+    changeColorBiceps() {
 
         this.setPolygonColor('biceps_1', 'green')
         this.setPolygonColor('biceps_2', 'green')
@@ -151,8 +152,11 @@ export class BodyCanvas implements AfterViewInit {
 
     // --- Obsługa myszy (hover + zbieranie punktów) ---
     onMouseMove(evt: MouseEvent) {
-        this.hover = this.getMousePos(evt);
-        this.redraw();
+        if(this.adminMode) {
+            this.hover = this.getMousePos(evt);
+            this.redraw();
+        }
+
     }
 
     onMouseLeave() {

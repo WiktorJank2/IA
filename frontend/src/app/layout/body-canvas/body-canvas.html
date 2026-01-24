@@ -8,40 +8,5 @@
         (click)="addPoint()"
     ></canvas>
 </div>
-
-<div class="controls" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-    <button style="border: solid 1px black" (click)="dodajBiceps()"> dodaj biceps</button>
-    <button style="border: solid 1px black" (click)="zmienKolorBiceps()"> zmien kolor biceps</button>
-</div>
-
-<div class="coords" style="margin-top:8px;">
-    <strong>Pozycja kursora:</strong>
-    x: {{ hover?.x ?? '-' }} | y: {{ hover?.y ?? '-' }}
-</div>
-
-<div class="points" style="margin-top:12px;">
-    <strong>Zebrane punkty (klikaj na canvas):</strong>
-    <span *ngIf="collected.length === 0"> — </span>
-
-    <ul *ngIf="collected.length">
-        <li *ngFor="let p of collected; let i = index">
-            #{{ i + 1 }}: ({{ p.x }}, {{ p.y }})
-        </li>
-    </ul>
-
-    <details *ngIf="collected.length" style="margin-top:8px;">
-        <summary>Pokaż JSON zebranych punktów</summary>
-        <pre>{{ collected | json }}</pre>
-    </details>
-</div>
-
-<div class="polys" style="margin-top:12px;">
-    <strong>Elementy (polygons):</strong>
-    <span> {{ polygons.length }} </span>
-
-    <details style="margin-top:8px;">
-        <summary>Pokaż JSON wszystkich elementów</summary>
-        <pre>{{ polygons | json }}</pre>
-    </details>
-</div>
-
+<button style="border: solid 1px black" (click)="showBiceps()"> showBiceps </button>
+<button style="border: solid 1px black" (click)="changeColorBiceps()"> changeColorBiceps </button>
