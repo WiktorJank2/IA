@@ -59,7 +59,21 @@ export class Plan {
         return this.selectedWorkouts[index]?.name === 'Rest';
     }
 
-    savePlan() {
+    selectWorkout(index: number) {
+        console.log('Selected workout at index', index);
+        // Handle selection logic if needed (e.g., mark it as chosen)
+    }
+
+
+
+    goToWorkout(index: number) {
+        const workout = this.selectedWorkouts[index];
+        if (workout?.id) {
+            this.router.navigate(['/menu/workout'], { queryParams: { id: workout.id } });
+        }
+    }
+
+            savePlan() {
         const selectedIds: (string | undefined)[] = this.selectedWorkouts.map(w => w?.id);
 
         if (selectedIds.includes(undefined)) {

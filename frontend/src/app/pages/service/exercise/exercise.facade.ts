@@ -84,4 +84,7 @@ export class ExerciseFacade {
             })
         );
     }
+    getById(id: string) {
+        return this.exerciseService.getById(id);
+    }
 }

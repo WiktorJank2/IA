@@ -21,11 +21,15 @@ import { Table, TableModule  } from 'primeng/table';
 
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { WorkoutDto } from '@/pages/service/workout/workout.model';
+import { WorkoutExerciseDto } from '@/pages/service/workoutExercise/workoutExercise.model';
 import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
+import { WorkoutService } from '@/pages/service/workout/workout.service';
+import { ExerciseService } from '@/pages/service/exercise/exercise.service';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -62,12 +66,10 @@ import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
     ]
 })
 export class Workout {
-
-    selectedAutoValue: string | null = null;
+    workout: WorkoutDto = { id: '', name: '', exercises: [] };    selectedAutoValue: string | null = null;
     autoFilteredValue: string[] = [];
     allExercises: ExerciseDto[] = [];
-    selectedExercises: ExerciseDto[] = [];
-    loading = true;
+    selectedExercises: WorkoutExerciseDto[] = [];    loading = true;
     workoutName: string = '';
 
     @ViewChild('filter') filter!: ElementRef;
@@ -75,8 +77,11 @@ export class Workout {
 
     constructor(
         private exerciseFacade: ExerciseFacade,
-    private workoutFacade: WorkoutFacade,
-    private router: Router
+        private workoutFacade: WorkoutFacade,
+        private route: ActivatedRoute,
+        private router: Router,
+        private workoutService: WorkoutService,
+        private exerciseService: ExerciseService,
 ) {
         this.exerciseFacade.fetchAllExercises();
 
@@ -91,20 +96,31 @@ export class Workout {
     onExerciseSelect(event: any) {
         const selectedName: string = event.value;
 
-        console.log('Autocomplete select event:', event);
-        console.log('Selected name from autocomplete:', selectedName);
 
-        const selected = this.allExercises.find(
+        // Find the ExerciseDto object
+        const selectedExercise = this.allExercises.find(
             ex => ex.name.trim() === selectedName.trim()
         );
 
-        console.log('Matched exercise object:', selected);
+        if (selectedExercise) {
+            // Check if this exercise is already in the table
+            const alreadyAdded = this.selectedExercises.some(
+                we => we.exercise.id === selectedExercise.id
+            );
 
-        if (selected) {
-            if (!this.selectedExercises.includes(selected)) {
-                this.selectedExercises.push(selected);
-                console.log('Added to table:', selected);
-                console.log('Current selectedExercises array:', this.selectedExercises);
+            if (!alreadyAdded) {
+                // Wrap ExerciseDto into WorkoutExerciseDto
+                const workoutExercise: WorkoutExerciseDto = {
+                    id: '', // leave empty; backend will assign if needed
+                    exercise: selectedExercise,
+                    workout: this.workout, // may be undefined if new workout
+                    sets: 1,
+                    reps: 1,
+                    weight: 0
+                };
+
+                this.selectedExercises.push(workoutExercise);
+                console.log('Added to table:', workoutExercise);
             } else {
                 console.log('Exercise already in table');
             }
@@ -112,7 +128,17 @@ export class Workout {
             console.log('No matching exercise found!');
         }
 
+        // Reset autocomplete input
         this.selectedAutoValue = null;
+    }
+
+    loadWorkout(id: string) {
+        this.workoutFacade.getById(id).subscribe({
+            next: (workout) => {
+                this.workout = workout;
+            },
+            error: (err) => console.error('Failed to load workout', err)
+        });
     }
 
     filterExercise(event: any) {
@@ -151,7 +177,7 @@ export class Workout {
             exercises: this.selectedExercises.map(ex => ({
                 id: ex.id!,
                 sets: ex.sets || 3, // default to 3 if not set
-                repetitions: ex.repetitions || 10 // default to 10 if not set
+                repetitions: ex.reps || 10 // default to 10 if not set
             }))
         };
 
@@ -167,8 +193,76 @@ export class Workout {
             }
         });
     }
+
+    goToExercise(exerciseId: string) {
+        // Optional: fetch exercise details in the facade so Exercise page can display immediately
+        this.exerciseFacade.getById(exerciseId).subscribe({
+            next: (exercise) => {
+                console.log('Navigating to exercise:', exercise);
+                this.router.navigate(['/menu/exercise'], { queryParams: { id: exerciseId } });
+            },
+            error: (err) => console.error('Failed to fetch exercise', err)
+        });
+    }
+
     removeExercise(index: number) {
         this.selectedExercises.splice(index, 1);
         console.log('Exercise removed, current list:', this.selectedExercises);
+    }
+
+    ngOnInit() {
+        const id = this.route.snapshot.queryParamMap.get('id');
+        console.log('Workout ID:', id);
+
+        if (id) {
+            // fetch workout basic info
+            this.workoutService.getById(id).subscribe({
+                next: (workout) => {
+                    this.workout = workout;
+                    this.workoutName = workout.name;
+                    console.log('Workout:', workout);
+
+                    // then fetch exercises for this workout
+                    this.exerciseService.getExercisesByWorkoutId(id).subscribe({
+                        next: (exercises) => {
+                            console.log('Exercises for workout:', exercises);
+                            this.selectedExercises = exercises.map(exercise => ({
+                                id: '', // or exercise.id if backend sends workoutExercise id
+                                exercise: exercise,
+                                workout: this.workout, // current workout
+                                sets: exercise.sets ?? 1,
+                                reps: exercise.repetitions ?? 1,
+                                weight: 0
+                            }));
+
+                        },
+                        error: (err) => console.error('Error fetching exercises:', err)
+                    });
+                },
+                error: (err) => console.error('Error fetching workout:', err)
+            });
+        }
+    }
+
+    fillForm(workout: WorkoutDto) {
+        this.workout = workout;
+        this.workoutName = workout.name;
+        this.selectedExercises = (workout.exercises || []).map(ex => ({
+            id: ex.id,
+            sets: ex.sets,
+            reps: ex.repetitions,
+            weight: 0,                     // default if you don’t have it yet
+            workout: workout,              // reference to the parent workout
+            exercise: {
+                id: ex.id,
+                name: 'Unknown',           // placeholder if name not included
+                description: '',
+                muscles: [],
+                difficultyRating: 0,
+                effectivenessRating: 0,
+                overallRating: 0,
+                selected: true             // if you need this for selection logic
+            }
+        }));
     }
 }

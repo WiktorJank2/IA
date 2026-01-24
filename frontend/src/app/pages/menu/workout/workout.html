@@ -17,70 +17,73 @@
                 <div class="font-semibold text-xl mb-4 flex justify-center">
                     SELECTED EXERCISES
                 </div>
-                <p-table
-                    #dt1
-                    [value]="selectedExercises"
-                    dataKey="id"
-                    [rows]="10"
-                    [loading]="loading"
-                    [rowHover]="true"
-                    [showGridlines]="true"
-                    [paginator]="true"
-                    [globalFilterFields]="['name']"
-                    responsiveLayout="scroll"
-                >
+                <div *ngIf="workout">
+                    <p-table
+                        #dt1
+                        [value]="selectedExercises"
+                        dataKey="id"
+                        [rows]="10"
+                        [loading]="loading"
+                        [rowHover]="true"
+                        [showGridlines]="true"
+                        [paginator]="true"
+                        [globalFilterFields]="['name']"
+                        responsiveLayout="scroll"
+                    >
+                        <!-- Caption -->
+                        <ng-template #caption>
+                            <div class="flex justify-between items-center flex-column sm:flex-row ">
+                                <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear()"></button>
+                                <p-iconfield iconPosition="left" class="ml-auto">
+                                    <p-inputicon>
+                                        <i class="pi pi-search"></i>
+                                    </p-inputicon>
+                                    <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search exercises" />
+                                </p-iconfield>
+                            </div>
+                        </ng-template>
 
-                    <!-- Caption: Search bar + clear button -->
-                    <ng-template #caption>
-                        <div class="flex justify-between items-center flex-column sm:flex-row ">
-                            <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear()"></button>
-                            <p-iconfield iconPosition="left" class="ml-auto">
-                                <p-inputicon>
-                                    <i class="pi pi-search"></i>
-                                </p-inputicon>
-                                <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Search exercises" />
-                            </p-iconfield>
-                        </div>
-                    </ng-template>
+                        <!-- Header -->
+                        <ng-template #header>
+                            <tr>
+                                <th>Name</th>
+                                <th>Number of Sets</th>
+                                <th>Number of Repetitions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </ng-template>
 
-                    <!-- Header -->
-                    <ng-template #header>
-                        <tr>
-                            <th>Name</th>
-                            <th>Number of Sets</th>
-                            <th>Number of Repetitions</th>
-                            <th>Actions</th>
-                        </tr>
-                    </ng-template>
+                        <!-- Body -->
+                        <ng-template #body let-exercise let-rowIndex="rowIndex">
+                            <tr>
+                                <td (click)="goToExercise(exercise.id)" style="cursor: pointer; text-decoration: underline; color: blue;">
+                                    {{ exercise.name }}
+                                </td>
+                                <td><input pInputText type="number" min="1" [(ngModel)]="exercise.sets" style="width: 60px" /></td>
+                                <td><input pInputText type="number" min="1" [(ngModel)]="exercise.repetitions" style="width: 60px" /></td>
+                                <td>
+                                    <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-rounded p-button-sm"
+                                            (click)="removeExercise(rowIndex)">
+                                    </button>
+                                </td>
+                            </tr>
+                        </ng-template>
 
-                    <!-- Body -->
-                    <ng-template #body let-exercise let-rowIndex="rowIndex">
-                        <tr>
-                            <td>{{ exercise.name }}</td>
-                            <td><input pInputText type="number" min="1" [(ngModel)]="exercise.sets" style="width: 60px" /></td>
-                            <td><input pInputText type="number" min="1" [(ngModel)]="exercise.repetitions" style="width: 60px" /></td>
-                            <td>
-                            <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-rounded p-button-sm"
-                                    (click)="removeExercise(rowIndex)">
-                            </button>
-                            </td>
-                        </tr>
-                    </ng-template>
+                        <!-- No exercises message -->
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="4">No exercises added yet.</td>
+                            </tr>
+                        </ng-template>
 
-                    <!-- No exercises message -->
-                    <ng-template #emptymessage>
-                        <tr>
-                            <td colspan="3">No exercises added yet.</td>
-                        </tr>
-                    </ng-template>
-
-                    <!-- Loading message -->
-                    <ng-template #loadingbody>
-                        <tr>
-                            <td colspan="3">Loading exercises. Please wait.</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+                        <!-- Loading message -->
+                        <ng-template #loadingbody>
+                            <tr>
+                                <td colspan="4">Loading exercises. Please wait.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
             </div>
 
             </div>
