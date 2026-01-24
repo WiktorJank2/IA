@@ -72,6 +72,8 @@ export class BodyCanvas implements AfterViewInit {
 
         this.showPolygon('biceps_1')
         this.setPolygonColor('biceps_1', 'red')
+        this.showPolygon('chest_1')
+        this.setPolygonColor('chest_1', 'orange')
 
         this.showPolygon('biceps_2')
         this.setPolygonColor('biceps_2', 'red')
@@ -81,6 +83,7 @@ export class BodyCanvas implements AfterViewInit {
 
         this.setPolygonColor('biceps_1', 'green')
         this.setPolygonColor('biceps_2', 'green')
+        this.setPolygonColor('chest_1', 'red')
 
     }
 

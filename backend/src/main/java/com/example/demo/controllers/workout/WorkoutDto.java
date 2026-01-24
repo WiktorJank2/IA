@@ -14,8 +14,7 @@ import java.util.UUID;
 public class WorkoutDto {
     private UUID id;
     private String name;
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();
+    private List<WorkoutExerciseDto> workoutExercises = new ArrayList<>();
     public WorkoutDto() {}
 
     public WorkoutDto(UUID id, String name) {

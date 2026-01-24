@@ -39,10 +39,10 @@ public class WorkoutEntity {
         this.name = name;
     }
 
-    public List<WorkoutExerciseDto> getExercises() {
+    public List<WorkoutExerciseEntity> getExercises() {
         return workoutExercises;
     }
-    public void setExercises(List<WorkoutExerciseDto> workoutExercises) {
+    public void setExercises(List<WorkoutExerciseEntity> workoutExercises) {
         this.workoutExercises = workoutExercises;
     }
 
