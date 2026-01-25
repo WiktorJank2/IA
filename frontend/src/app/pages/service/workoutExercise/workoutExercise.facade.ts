@@ -87,4 +87,13 @@ export class WorkoutExerciseFacade {
     getById(id: string) {
         return this.workoutExerciseService.getById(id);
     }
+
+    createWorkoutExercises(workoutExerciseDtos: WorkoutExerciseDto[]) {
+        this.workoutExerciseService.createMany(workoutExerciseDtos)
+        .pipe(
+            take(1),
+            tap(x => this.workoutExerciseState$.next(x))
+        )
+        .subscribe()
+    }
 }

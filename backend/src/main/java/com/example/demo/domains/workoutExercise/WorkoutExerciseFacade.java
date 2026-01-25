@@ -4,11 +4,14 @@ import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
 import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
 import com.example.demo.repository.workoutExercise.WorkoutExerciseRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class WorkoutExerciseFacade {
 
     private final WorkoutExerciseRepository workoutExerciseRepository;
@@ -68,5 +71,11 @@ public class WorkoutExerciseFacade {
         }
 
         workoutExerciseRepository.deleteById(uuid);
+    }
+
+    public WorkoutExerciseDto[] createWorkoutExercises(WorkoutExerciseDto[] workoutExerciseDtos) {
+        return Arrays.stream(workoutExerciseDtos)
+                .map(this::addWorkoutExercise)
+                .toArray(WorkoutExerciseDto[]::new);
     }
 }

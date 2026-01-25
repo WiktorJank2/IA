@@ -34,20 +34,22 @@ public class WorkoutExerciseMapper {
     public WorkoutExerciseEntity toEntity(WorkoutExerciseDto dto) {
         WorkoutExerciseEntity entity = new WorkoutExerciseEntity();
 
-        if (dto.getId() != null ) {
+        if (dto.getId() != null) {
             entity.setId(dto.getId());
         }
 
-        WorkoutEntity p = workoutRepository.findById(dto.getWorkout().getId()).get();
-        entity.setWorkout(p);
+        // Fetch related entities from repositories
+        WorkoutEntity workout = workoutRepository.findById(dto.getWorkout().getId())
+                .orElseThrow(() -> new RuntimeException("Workout not found"));
+        entity.setWorkout(workout);
 
-        ExerciseEntity s = exerciseRepository.findById(dto.getExercise().getId()).get();
-        entity.setExercise(s);
+        ExerciseEntity exercise = exerciseRepository.findById(dto.getExercise().getId())
+                .orElseThrow(() -> new RuntimeException("Exercise not found"));
+        entity.setExercise(exercise);
 
-        entity.setReps(dto.getReps());
         entity.setSets(dto.getSets());
+        entity.setReps(dto.getReps());
         entity.setWeight(dto.getWeight());
-
 
         return entity;
     }
@@ -58,19 +60,15 @@ public class WorkoutExerciseMapper {
 
         dto.setId(entity.getId());
 
-        WorkoutDto workoutDto = workoutMapper.toDto(entity.getWorkout());
-        dto.setWorkout(workoutDto);
-
         ExerciseDto exerciseDto = exerciseMapper.toDto(entity.getExercise());
         dto.setExercise(exerciseDto);
 
+        WorkoutDto workoutDto = workoutMapper.toDto(entity.getWorkout());
+        dto.setWorkout(workoutDto);
 
-        dto.setId(entity.getId());
-        dto.setReps(entity.getReps());
         dto.setSets(entity.getSets());
+        dto.setReps(entity.getReps());
         dto.setWeight(entity.getWeight());
-
-
 
         return dto;
     }

@@ -8,7 +8,6 @@ import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
     providedIn: 'root'
 })
 export class ExerciseService {
-    private baseUrl = 'http://localhost:8080/exercises';
     private readonly apiUrl = 'http://localhost:8080/exercises'; // backend url
 
     constructor(private http: HttpClient) {}
@@ -33,7 +32,4 @@ export class ExerciseService {
         return this.http.delete<ExerciseDto>(this.apiUrl + '/' + id);
     }
 
-    getExercisesByWorkoutId(workoutId: string): Observable<ExerciseDto[]> {
-        return this.http.get<ExerciseDto[]>(`${this.baseUrl}/workout/${workoutId}`);
-    }
 }

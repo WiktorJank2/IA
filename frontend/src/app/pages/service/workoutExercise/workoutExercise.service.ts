@@ -8,8 +8,7 @@ import { WorkoutExerciseDto } from '@/pages/service/workoutExercise/workoutExerc
     providedIn: 'root'
 })
 export class WorkoutExerciseService {
-    private baseUrl = 'http://localhost:8080/exercises';
-    private readonly apiUrl = 'http://localhost:8080/exercises'; // backend url
+    private readonly apiUrl = 'http://localhost:8080/workout-exercises'; // backend url
 
     constructor(private http: HttpClient) {}
 
@@ -34,6 +33,10 @@ export class WorkoutExerciseService {
     }
 
     getExercisesByWorkoutId(workoutId: string): Observable<WorkoutExerciseDto[]> {
-        return this.http.get<WorkoutExerciseDto[]>(`${this.baseUrl}/workout/${workoutId}`);
+        return this.http.get<WorkoutExerciseDto[]>(`${this.apiUrl}/workout/${workoutId}`);
+    }
+
+    createMany(workoutExerciseDtos: WorkoutExerciseDto[]) {
+        return this.http.post<WorkoutExerciseDto[]>(this.apiUrl + '/many', workoutExerciseDtos);
     }
 }

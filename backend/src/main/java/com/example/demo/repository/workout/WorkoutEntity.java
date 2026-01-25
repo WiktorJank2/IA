@@ -17,9 +17,9 @@ public class WorkoutEntity {
     @Id
     @GeneratedValue
     private UUID id;
+
     private String name;
-    @OneToMany
-    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();
+
 
     public WorkoutEntity() {}
 
@@ -39,11 +39,5 @@ public class WorkoutEntity {
         this.name = name;
     }
 
-    public List<WorkoutExerciseEntity> getExercises() {
-        return workoutExercises;
-    }
-    public void setExercises(List<WorkoutExerciseEntity> workoutExercises) {
-        this.workoutExercises = workoutExercises;
-    }
 
 }

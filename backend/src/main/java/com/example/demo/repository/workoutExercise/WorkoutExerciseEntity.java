@@ -18,11 +18,11 @@ public class WorkoutExerciseEntity {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "exercise")
+    @JoinColumn(name = "exercise", nullable = false)
     private ExerciseEntity exercise;
 
     @ManyToOne
-    @JoinColumn(name = "workout")
+    @JoinColumn(name = "workout", nullable = false)
     private WorkoutEntity workout;
 
     private int sets;
@@ -41,7 +41,7 @@ public class WorkoutExerciseEntity {
         this.id = id;
     }
 
-    public void setExercise(ExerciseEntity exercises) {
+    public void setExercise(ExerciseEntity exercise) {
         this.exercise=exercise;
     }
 

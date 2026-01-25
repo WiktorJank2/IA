@@ -1,5 +1,7 @@
 package com.example.demo.controllers.workout;
 
+import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -7,7 +9,6 @@ import java.util.UUID;
 public class WorkoutDto {
     private UUID id;
     private String name;
-    public List<UUID> workoutExerciseIds;
     public WorkoutDto() {}
 
     public WorkoutDto(UUID id, String name) {
@@ -32,11 +33,5 @@ public class WorkoutDto {
         this.name = name;
     }
 
-    public List<UUID> getWorkoutExerciseIds() {
-        return workoutExerciseIds;
-    }
-    public void setWorkoutExerciseIds(List<UUID> workoutExerciseIds) {
-        this.workoutExerciseIds = workoutExerciseIds;
-    }
 }
 

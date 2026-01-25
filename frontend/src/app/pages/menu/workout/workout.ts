@@ -27,9 +27,10 @@ import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
 import { WorkoutDto } from '@/pages/service/workout/workout.model';
 import { WorkoutExerciseDto } from '@/pages/service/workoutExercise/workoutExercise.model';
 import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
+import { WorkoutExerciseFacade } from '@/pages/service/workoutExercise/workoutExercise.facade'
 import { WorkoutService } from '@/pages/service/workout/workout.service';
 import { ExerciseService } from '@/pages/service/exercise/exercise.service';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, takeUntil, tap } from 'rxjs';
 
 
 @Component({
@@ -66,11 +67,14 @@ import { forkJoin } from 'rxjs';
     ]
 })
 export class Workout {
-    workout: WorkoutDto = { id: '', name: '', exercises: [] };    selectedAutoValue: string | null = null;
+    workout: WorkoutDto = { id: '', name: ''};
+    selectedAutoValue: string | null = null;
     autoFilteredValue: string[] = [];
     allExercises: ExerciseDto[] = [];
     selectedExercises: WorkoutExerciseDto[] = [];    loading = true;
     workoutName: string = '';
+
+    private destroy$ = new Subject<void>();
 
     @ViewChild('filter') filter!: ElementRef;
     @ViewChild('dt1') dt1!: Table;
@@ -78,6 +82,7 @@ export class Workout {
     constructor(
         private exerciseFacade: ExerciseFacade,
         private workoutFacade: WorkoutFacade,
+        private workoutExerciseFacade: WorkoutExerciseFacade,
         private route: ActivatedRoute,
         private router: Router,
         private workoutService: WorkoutService,
@@ -96,7 +101,6 @@ export class Workout {
     onExerciseSelect(event: any) {
         const selectedName: string = event.value;
 
-
         // Find the ExerciseDto object
         const selectedExercise = this.allExercises.find(
             ex => ex.name.trim() === selectedName.trim()
@@ -111,9 +115,9 @@ export class Workout {
             if (!alreadyAdded) {
                 // Wrap ExerciseDto into WorkoutExerciseDto
                 const workoutExercise: WorkoutExerciseDto = {
-                    id: '', // leave empty; backend will assign if needed
+                    id: '', // leave empty for new
                     exercise: selectedExercise,
-                    workout: this.workout, // may be undefined if new workout
+                    workout: this.workout,
                     sets: 1,
                     reps: 1,
                     weight: 0
@@ -167,31 +171,42 @@ export class Workout {
         this.dt1.clear();
     }
     saveWorkout() {
-        if (!this.workoutName || this.selectedExercises.length === 0) {
+        if (!this.workout.name || this.selectedExercises.length === 0) {
             console.log('Workout name or exercises missing');
             return;
         }
 
-        const workoutPayload: WorkoutDto = {
-            name: this.workoutName,
-            exercises: this.selectedExercises.map(ex => ({
-                id: ex.id!,
-                sets: ex.sets || 3, // default to 3 if not set
-                repetitions: ex.reps || 10 // default to 10 if not set
-            }))
-        };
 
-        console.log('Workout payload:', workoutPayload);
+        this.workoutFacade
+            .createWorkout(this.workout)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (createdWorkout) => {
+                    this.workout = createdWorkout;
+                    console.log(this.workout);
+                    console.log(this.selectedExercises);
+                    this.createWorkoutExercises();
 
-        this.workoutFacade.createWorkout(workoutPayload).subscribe({
-            next: () => {
-                console.log('Workout saved successfully');
-                this.router.navigate(['/']);
-            },
-            error: err => {
-                console.error('Failed to save workout', err);
-            }
+                },
+                error: (err) => {
+                    console.error('Failed to create workout', err);
+                    const detail = err?.message ?? 'unknown';
+                }
+            })
+
+
+    }
+
+    createWorkoutExercises(){
+        this.selectedExercises.forEach(exercise => {
+            exercise.workout = this.workout;
         });
+        this.workoutExerciseFacade.createWorkoutExercises(this.selectedExercises);
+        this.workoutExerciseFacade.workoutExerciseState$
+            .pipe(tap((created) => (this.selectedExercises = created)),
+                takeUntil(this.destroy$)
+            )
+            .subscribe();
     }
 
     goToExercise(exerciseId: string) {
@@ -244,25 +259,13 @@ export class Workout {
         }
     }
 
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
     fillForm(workout: WorkoutDto) {
         this.workout = workout;
         this.workoutName = workout.name;
-        this.selectedExercises = (workout.exercises || []).map(ex => ({
-            id: ex.id,
-            sets: ex.sets,
-            reps: ex.repetitions,
-            weight: 0,                     // default if you don’t have it yet
-            workout: workout,              // reference to the parent workout
-            exercise: {
-                id: ex.id,
-                name: 'Unknown',           // placeholder if name not included
-                description: '',
-                muscles: [],
-                difficultyRating: 0,
-                effectivenessRating: 0,
-                overallRating: 0,
-                selected: true             // if you need this for selection logic
-            }
-        }));
     }
 }

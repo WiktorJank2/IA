@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@RestController
+@RequestMapping("/workout-exercises")
 public class WorkoutExerciseController {
     private final WorkoutExerciseFacade workoutExerciseFacade;
 
@@ -20,6 +23,11 @@ public class WorkoutExerciseController {
     @PostMapping
     public WorkoutExerciseDto addWorkoutExercise(@RequestBody WorkoutExerciseDto workoutExerciseDto) {
         return workoutExerciseFacade.addWorkoutExercise(workoutExerciseDto);
+    }
+
+    @PostMapping("/many")
+    public WorkoutExerciseDto[] addWorkoutExercises(@RequestBody WorkoutExerciseDto[] workoutExerciseDtos) {
+        return workoutExerciseFacade.createWorkoutExercises(workoutExerciseDtos);
     }
 
     @GetMapping("/{id}")

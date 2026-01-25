@@ -7,23 +7,23 @@ import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
 import java.util.UUID;
 
 public class WorkoutExerciseDto {
-    private UUID id;
+    public UUID id;
+    public ExerciseDto exercise;
+    public WorkoutDto workout;
+    public int sets;
+    public int reps;
+    public double getWeight;
 
-
-
-    private int sets;
-    private int reps;
-    private double weight;
 
     public WorkoutExerciseDto() {}
 
-    public WorkoutExerciseDto(UUID id, int sets, int reps, double weight) {
+    public WorkoutExerciseDto(UUID id, ExerciseDto exercise, WorkoutDto workout, int sets, int reps) {
         this.id = id;
-
-
+        this.exercise = exercise;
+        this.workout = workout;
         this.sets = sets;
         this.reps = reps;
-        this.weight = weight;
+
     }
 
     public UUID getId() {
@@ -33,8 +33,6 @@ public class WorkoutExerciseDto {
     public void setId(UUID id) {
         this.id = id;
     }
-
-
 
     public int getSets() {
         return sets;
@@ -52,11 +50,36 @@ public class WorkoutExerciseDto {
         this.reps = reps;
     }
 
-    public double getWeight() {
-        return weight;
+    public ExerciseDto getExercise() {
+        return exercise;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
+    public void setExercise(ExerciseDto exercise) {
+        this.exercise = exercise;
     }
+
+    public WorkoutDto getWorkout() {
+        return workout;
+    }
+
+    public void setWorkout(WorkoutDto workout) {
+        this.workout = workout;
+    }
+
+    public double getGetWeight() {
+        return getWeight;
+    }
+
+    public void setGetWeight(double getWeight) {
+        this.getWeight = getWeight;
+    }
+
+    public double getWeight() {
+        return getWeight;
+    }
+
+    public void setWeight(double getWeight) {
+        this.getWeight = getWeight;
+    }
+
 }

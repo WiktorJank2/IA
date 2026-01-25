@@ -2,11 +2,10 @@ import { ExerciseDto } from '@/pages/service/exercise/exercise.model'; // adjust
 import { WorkoutDto } from '@/pages/service/workout/workout.model';   // if you also use WorkoutDto
 
 export interface WorkoutExerciseDto{
-    id?: string;
+    id: string;
     sets: number;
     reps: number;
     weight:number;
     exercise: ExerciseDto;
     workout: WorkoutDto;
-
 }
