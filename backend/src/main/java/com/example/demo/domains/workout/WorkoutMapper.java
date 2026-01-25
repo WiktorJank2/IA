@@ -39,11 +39,11 @@ public class WorkoutMapper {
 
         dto.setId(entity.getId());
         dto.setName(entity.getName());
-        entity.getExercises().stream()
-                .map(ExerciseEntity::getExercise)
-                .map(this.exerciseMapper::toDto)
-                .toList();
-        dto.setExercises(entity.getExercises());
+
+//        dto.setExercises(entity.getExercises().stream()
+//                .map(ExerciseEntity::getExercise)
+//                .map(this.exerciseMapper::toDto)
+//                .toList());
 
 
         return dto;
