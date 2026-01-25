@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
 import { PlanDto } from '@/pages/service/plan/plan.model';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -56,7 +56,7 @@ export class Samples implements OnInit {
     loading = false;
     private restWorkoutId= '318ce03f-b09f-4407-9cf2-2c2d011e8ab1';
 
-    constructor(private planFacade: PlanFacade) {}
+    constructor(private planFacade: PlanFacade, private router: Router) {}
 
     ngOnInit() {
         this.loading = true;
@@ -72,6 +72,9 @@ export class Samples implements OnInit {
         this.planFacade.fetchAllPlans();
     }
 
+    openPlan(planId: string) {  // planId is string if your array is string[]
+        this.router.navigate(['/menu/plan'], { queryParams: { id: planId } });
+    }
 
     onGlobalFilter(event: Event) {
         const value = (event.target as HTMLInputElement).value;

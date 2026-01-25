@@ -13,5 +13,10 @@ export default [
     { path: 'exercise', data: { breadcrumb: 'Exercise' }, component: Exercise },
     { path: 'samples', data: { breadcrumb: 'Samples' }, component: Samples },
     { path: 'my-plans', data: { breadcrumb: 'My Plans' }, component: MyPlans },
-    { path: '**', redirectTo: '/notfound' }
+    { path: '**', redirectTo: '/notfound' },
+    {
+        path: 'plan/:id',
+        component: Plan
+    },
+
 ] as Routes;

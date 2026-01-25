@@ -1,12 +1,5 @@
 package com.example.demo.controllers.workout;
 
-import com.example.demo.controllers.exercise.ExerciseDto;
-import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
-import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +7,7 @@ import java.util.UUID;
 public class WorkoutDto {
     private UUID id;
     private String name;
-    private List<WorkoutExerciseDto> workoutExercises = new ArrayList<>();
+    public List<UUID> workoutExerciseIds;
     public WorkoutDto() {}
 
     public WorkoutDto(UUID id, String name) {
@@ -39,12 +32,11 @@ public class WorkoutDto {
         this.name = name;
     }
 
-    public List<WorkoutExerciseDto> getExercises() {
-        return workoutExercises;
+    public List<UUID> getWorkoutExerciseIds() {
+        return workoutExerciseIds;
     }
-    public void setExercises(List<WorkoutExerciseDto> workoutExercises) {
-        this.workoutExercises = workoutExercises;
+    public void setWorkoutExerciseIds(List<UUID> workoutExerciseIds) {
+        this.workoutExerciseIds = workoutExerciseIds;
     }
-
 }
 

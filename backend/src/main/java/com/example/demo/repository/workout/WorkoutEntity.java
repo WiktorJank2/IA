@@ -18,8 +18,8 @@ public class WorkoutEntity {
     @GeneratedValue
     private UUID id;
     private String name;
-    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();;
+    @OneToMany
+    private List<WorkoutExerciseEntity> workoutExercises = new ArrayList<>();
 
     public WorkoutEntity() {}
 

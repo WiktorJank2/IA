@@ -35,7 +35,11 @@
 
             <ng-template #body let-plan>
                 <tr>
-                    <td>{{ plan.name }}</td>
+                    <td>
+                        <div (click)="openPlan(plan.id)">
+                            {{ plan.name }}
+                        </div>
+                    </td>
                     <td>{{ getActiveWorkoutCount(plan) }}
                     </td>
                     <td class="text-center">

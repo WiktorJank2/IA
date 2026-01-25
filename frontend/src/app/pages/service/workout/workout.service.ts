@@ -31,4 +31,8 @@ export class WorkoutService {
     delete(id: string): Observable<WorkoutDto> {
         return this.http.delete<WorkoutDto>(this.apiUrl + '/' + id);
     }
+
+    getWorkoutById(id: string): Observable<WorkoutDto> {
+        return this.http.get<WorkoutDto>(`http://localhost:8080/workouts/${id}`);
+    }
 }

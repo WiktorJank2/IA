@@ -17,7 +17,7 @@ import {RippleModule} from "primeng/ripple";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {Customer, CustomerService} from "@/pages/service/customer.service";
 import {ProductService} from "@/pages/service/product.service";
-import {RouterLink} from "@angular/router";
+import {RouterLink, Router} from "@angular/router";
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
@@ -74,7 +74,8 @@ export class MyPlans {
     constructor(
         private customerService: CustomerService,
         private productService: ProductService,
-        private planFacade: PlanFacade
+        private planFacade: PlanFacade,
+        private router: Router
     ) {
     }
 
@@ -97,6 +98,11 @@ export class MyPlans {
         }
 
         return count;
+    }
+
+    openPlan(planId: string) {  // planId is string if your array is string[]
+       this.router.navigate(['/menu/plan'], { queryParams: { id: planId } });
+
     }
 
     onCurrentChange(selectedPlan: PlanDto) {
