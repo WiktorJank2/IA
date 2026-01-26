@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 import { WorkoutExerciseDto } from '@/pages/service/workoutExercise/workoutExercise.model';
 import { WorkoutExerciseService } from '@/pages/service/workoutExercise/workoutExercise.service';
@@ -11,7 +12,7 @@ export class WorkoutExerciseFacade {
     workoutExerciseState$ = new BehaviorSubject<WorkoutExerciseDto[]>([])
     workoutExerciseByIdState$ = new BehaviorSubject<WorkoutExerciseDto | null>(null)
 
-    constructor(private workoutExerciseService: WorkoutExerciseService) {
+    constructor(private workoutExerciseService: WorkoutExerciseService, private http: HttpClient) {
     }
 
     fetchAllWorkoutExercises(): void {
@@ -84,6 +85,7 @@ export class WorkoutExerciseFacade {
             })
         );
     }
+
     getById(id: string) {
         return this.workoutExerciseService.getById(id);
     }
@@ -96,4 +98,19 @@ export class WorkoutExerciseFacade {
         )
         .subscribe()
     }
+    addWorkoutExercise(dto: WorkoutExerciseDto): Observable<WorkoutExerciseDto> {
+        return this.workoutExerciseService.create(dto).pipe(
+            take(1),
+            tap((created) => {
+                // add the new workoutExercise to workoutExerciseState$
+                const currentWorkoutExercises = this.workoutExerciseState$.getValue();
+                this.workoutExerciseState$.next([...currentWorkoutExercises, created]);
+
+                // optionally set workoutExerciseByIdState$ if you want immediate access
+                this.workoutExerciseByIdState$.next(created);
+            })
+        );
+    }
+
+
 }

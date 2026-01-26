@@ -28,9 +28,10 @@ import { WorkoutDto } from '@/pages/service/workout/workout.model';
 import { WorkoutExerciseDto } from '@/pages/service/workoutExercise/workoutExercise.model';
 import { WorkoutFacade } from '@/pages/service/workout/workout.facade';
 import { WorkoutExerciseFacade } from '@/pages/service/workoutExercise/workoutExercise.facade'
+import { WorkoutExerciseService } from '@/pages/service/workoutExercise/workoutExercise.service'
 import { WorkoutService } from '@/pages/service/workout/workout.service';
 import { ExerciseService } from '@/pages/service/exercise/exercise.service';
-import { forkJoin, Subject, takeUntil, tap } from 'rxjs';
+import { forkJoin, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 
 @Component({
@@ -73,6 +74,7 @@ export class Workout {
     allExercises: ExerciseDto[] = [];
     selectedExercises: WorkoutExerciseDto[] = [];    loading = true;
     workoutName: string = '';
+    deletedExercises: WorkoutExerciseDto[] = [];
 
     private destroy$ = new Subject<void>();
 
@@ -83,6 +85,7 @@ export class Workout {
         private exerciseFacade: ExerciseFacade,
         private workoutFacade: WorkoutFacade,
         private workoutExerciseFacade: WorkoutExerciseFacade,
+        private workoutExerciseService: WorkoutExerciseService,
         private route: ActivatedRoute,
         private router: Router,
         private workoutService: WorkoutService,
@@ -176,26 +179,64 @@ export class Workout {
             return;
         }
 
+        // 🔹 If workout already exists, update it
+        if (this.workout.id && this.workout.id !== '') {
+            // 1️⃣ Handle new exercises first
+            const newExercises = this.selectedExercises.filter(e => !e.id);
+            const addObservables = newExercises.map(ex =>
+                this.workoutExerciseFacade.addWorkoutExercise({ ...ex, workout: this.workout })
+            );
 
+            // 2️⃣ Handle deleted exercises
+            const deletedExercises = this.deletedExercises || [];
+            const deleteObservables = deletedExercises.map(exId =>
+                this.workoutExerciseFacade.deleteWorkoutExercise(exId.id)
+            );
+
+            // 3️⃣ Handle existing exercises updates (sets/reps)
+            const existingExercises = this.selectedExercises.filter(e => e.id);
+            const updateObservables = existingExercises.map(ex =>
+                this.workoutExerciseFacade.updateWorkoutExercise(ex.id!, ex)
+            );
+
+            // Execute all operations
+            forkJoin([...addObservables, ...deleteObservables, ...updateObservables])
+                .pipe(
+                    takeUntil(this.destroy$),
+                    switchMap(() => this.workoutFacade.updateWorkout(this.workout.id!, this.workout))
+                )
+                .subscribe({
+                    next: updatedWorkout => {
+                        this.workout = updatedWorkout;
+                        console.log('Workout fully updated:', this.workout);
+                        // Clear deletedExercises for next save
+                        this.deletedExercises = [];
+                    },
+                    error: err => {
+                        console.error('Failed to update workout and exercises', err);
+                    }
+                });
+
+            return;
+        }
+
+        // 🔹 CREATE new workout (existing logic – unchanged)
         this.workoutFacade
             .createWorkout(this.workout)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (createdWorkout) => {
+                next: createdWorkout => {
                     this.workout = createdWorkout;
                     console.log(this.workout);
                     console.log(this.selectedExercises);
                     this.createWorkoutExercises();
-
                 },
-                error: (err) => {
+                error: err => {
                     console.error('Failed to create workout', err);
-                    const detail = err?.message ?? 'unknown';
                 }
-            })
-
-
+            });
     }
+
 
     createWorkoutExercises(){
         this.selectedExercises.forEach(exercise => {
@@ -221,43 +262,69 @@ export class Workout {
     }
 
     removeExercise(index: number) {
-        this.selectedExercises.splice(index, 1);
-        console.log('Exercise removed, current list:', this.selectedExercises);
-    }
+        const removed: WorkoutExerciseDto = this.selectedExercises.splice(index, 1)[0];
+        this.deletedExercises.push(removed);
+        this.workoutExerciseFacade.deleteWorkoutExercise(removed.id).subscribe({
+            next: () => console.log('Deleted on backend:', removed),
+            error: err => console.error('Failed to delete exercise', err)
+        });    }
 
     ngOnInit() {
+        console.log('ngOnInit START');
+
         const id = this.route.snapshot.queryParamMap.get('id');
-        console.log('Workout ID:', id);
+        console.log('Query param id:', id);
 
         if (id) {
-            // fetch workout basic info
+            console.log('ID exists, fetching workout...');
+
             this.workoutService.getById(id).subscribe({
                 next: (workout) => {
+                    console.log('getById SUCCESS');
+                    console.log('Raw workout response:', workout);
+
                     this.workout = workout;
                     this.workoutName = workout.name;
-                    console.log('Workout:', workout);
 
-                    // then fetch exercises for this workout
-                    this.exerciseService.getExercisesByWorkoutId(id).subscribe({
-                        next: (exercises) => {
-                            console.log('Exercises for workout:', exercises);
-                            this.selectedExercises = exercises.map(exercise => ({
-                                id: '', // or exercise.id if backend sends workoutExercise id
-                                exercise: exercise,
-                                workout: this.workout, // current workout
-                                sets: exercise.sets ?? 1,
-                                reps: exercise.repetitions ?? 1,
-                                weight: 0
-                            }));
+                    console.log('Workout assigned to component:', this.workout);
+                    console.log('Workout name set to:', this.workoutName);
 
+                    console.log('Fetching exercises for workout id:', id);
+
+                    this.workoutExerciseService.getExercisesByWorkoutId(id).subscribe({
+                        next: (workoutExerciseDtos) => {
+                            console.log('getExercisesByWorkoutId SUCCESS');
+                            console.log('Raw exercises response:', workoutExerciseDtos);
+
+                            this.selectedExercises = workoutExerciseDtos;
+
+                            console.log('selectedExercises assigned:', this.selectedExercises);
+                            console.log('Number of exercises:', this.selectedExercises.length);
                         },
-                        error: (err) => console.error('Error fetching exercises:', err)
+                        error: (err) => {
+                            console.error('getExercisesByWorkoutId ERROR');
+                            console.error(err);
+                        },
+                        complete: () => {
+                            console.log('getExercisesByWorkoutId COMPLETE');
+                        }
                     });
                 },
-                error: (err) => console.error('Error fetching workout:', err)
+                error: (err) => {
+                    console.error('getById ERROR');
+                    console.error(err);
+                },
+                complete: () => {
+                    console.log('getById COMPLETE');
+                }
             });
+        } else {
+            console.warn('No workout ID found in query params');
         }
+
+        console.log('ngOnInit END (async calls may still be running)');
     }
+
 
     ngOnDestroy() {
         this.destroy$.next();

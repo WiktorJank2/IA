@@ -76,7 +76,6 @@ public class WorkoutFacade {
 
         workout.setName(dto.getName());
 
-        // Remove children that are not in the new D
 
         WorkoutEntity saved = workoutRepository.save(workout);
 

@@ -92,7 +92,7 @@ export class MyPlans {
         }
 
         for (const id of plan.workoutIds) {
-            if (id !== '318ce03f-b09f-4407-9cf2-2c2d011e8ab1') {
+            if (id !== '2f998760-10be-4bf8-8363-770d8f40eb19') {
                 count++;
             }
         }

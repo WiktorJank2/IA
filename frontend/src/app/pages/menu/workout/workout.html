@@ -54,13 +54,13 @@
                         </ng-template>
 
                         <!-- Body -->
-                        <ng-template #body let-row let-rowIndex="rowIndex">
+                        <ng-template #body let-workoutExercise let-rowIndex="rowIndex">
                             <tr>
-                                <td (click)="goToExercise(row.exercise.id)" style="cursor: pointer; text-decoration: underline; color: blue;">
-                                    {{ row.exercise.name }}
+                                <td (click)="goToExercise(workoutExercise.exercise.id)" style="cursor: pointer; text-decoration: underline; color: blue;">
+                                    {{ workoutExercise.exercise.name }}
                                 </td>
-                                <td><input pInputText type="number" min="1" [(ngModel)]="row.exercise.sets" style="width: 60px" /></td>
-                                <td><input pInputText type="number" min="1" [(ngModel)]="row.exercise.repetitions" style="width: 60px" /></td>
+                                <td><input pInputText type="number" min="1" [(ngModel)]="workoutExercise.sets" style="width: 60px" /></td>
+                                <td><input pInputText type="number" min="1" [(ngModel)]="workoutExercise.reps" style="width: 60px" /></td>
                                 <td>
                                     <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-rounded p-button-sm"
                                             (click)="removeExercise(rowIndex)">

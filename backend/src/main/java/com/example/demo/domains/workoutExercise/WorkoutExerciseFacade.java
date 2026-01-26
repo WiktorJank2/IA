@@ -1,6 +1,8 @@
 package com.example.demo.domains.workoutExercise;
 
 import com.example.demo.controllers.workoutExercise.WorkoutExerciseDto;
+import com.example.demo.repository.exercise.ExerciseRepository;
+import com.example.demo.repository.workout.WorkoutRepository;
 import com.example.demo.repository.workoutExercise.WorkoutExerciseEntity;
 import com.example.demo.repository.workoutExercise.WorkoutExerciseRepository;
 import org.springframework.http.HttpStatus;
@@ -16,10 +18,14 @@ public class WorkoutExerciseFacade {
 
     private final WorkoutExerciseRepository workoutExerciseRepository;
     private final WorkoutExerciseMapper workoutExerciseMapper;
+    private final ExerciseRepository exerciseRepository;
+    private final WorkoutRepository workoutRepository;
 
-    public WorkoutExerciseFacade(WorkoutExerciseRepository workoutExerciseRepository, WorkoutExerciseMapper workoutExerciseMapper) {
+    public WorkoutExerciseFacade(WorkoutExerciseRepository workoutExerciseRepository, WorkoutExerciseMapper workoutExerciseMapper, ExerciseRepository exerciseRepository, WorkoutRepository workoutRepository) {
         this.workoutExerciseRepository = workoutExerciseRepository;
         this.workoutExerciseMapper = workoutExerciseMapper;
+        this.exerciseRepository = exerciseRepository;
+        this.workoutRepository = workoutRepository;
     }
 
     public List<WorkoutExerciseDto> getWorkoutExercise() {
@@ -48,12 +54,18 @@ public class WorkoutExerciseFacade {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "WorkoutExercise not found"));
 
 
-        workoutExercise.setExercise(workoutExercise.getExercise());
-        workoutExercise.setWeight(workoutExercise.getWeight());
-        workoutExercise.setWorkout(workoutExercise.getWorkout());
-        workoutExercise.setReps(workoutExercise.getReps());
-        workoutExercise.setSets(workoutExercise.getSets());
+        workoutExercise.setExercise(
+                exerciseRepository.findById(workoutExerciseDto.getExercise().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"))
+        );
+        workoutExercise.setWorkout(
+                workoutRepository.findById(workoutExerciseDto.getWorkout().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout not found"))
+        );
 
+        workoutExercise.setReps(workoutExerciseDto.getReps());
+        workoutExercise.setSets(workoutExerciseDto.getSets());
+        workoutExercise.setWeight(workoutExerciseDto.getWeight());
 
         workoutExerciseRepository.save(workoutExercise);
 
@@ -76,6 +88,14 @@ public class WorkoutExerciseFacade {
     public WorkoutExerciseDto[] createWorkoutExercises(WorkoutExerciseDto[] workoutExerciseDtos) {
         return Arrays.stream(workoutExerciseDtos)
                 .map(this::addWorkoutExercise)
+                .toArray(WorkoutExerciseDto[]::new);
+    }
+
+    public WorkoutExerciseDto[] getWorkoutExercisesByWorkoutId(String workoutId) {
+        UUID workoutUuid = UUID.fromString(workoutId);
+
+        return Arrays.stream(workoutExerciseRepository.findByWorkoutId(workoutUuid))
+                .map(workoutExerciseMapper::toDto)
                 .toArray(WorkoutExerciseDto[]::new);
     }
 }

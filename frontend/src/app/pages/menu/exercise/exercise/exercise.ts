@@ -144,7 +144,6 @@ export class Exercise {
             console.log('Payload:', exercise);
 
             this.exerciseFacade.updateExercise(this.exerciseId, exercise).subscribe({
-                next: () => this.router.navigate(['/']),
                 error: err => {
                     console.error('Failed to update exercise', err);
                 }
@@ -152,7 +151,6 @@ export class Exercise {
         } else {
             //CREATE
             this.exerciseFacade.createExercise(exercise).subscribe({
-                next: () => this.router.navigate(['/']),
                 error: err => console.error('Failed to create exercise', err)
             });
         }

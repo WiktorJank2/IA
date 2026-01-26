@@ -20,6 +20,11 @@ public class WorkoutExerciseController {
         return workoutExerciseFacade.getWorkoutExercise();
     }
 
+    @GetMapping("/workout/{workoutId}")
+    public WorkoutExerciseDto[] getWorkoutExercisesByWorkoutId(@PathVariable String workoutId) {
+        return workoutExerciseFacade.getWorkoutExercisesByWorkoutId(workoutId);
+    }
+
     @PostMapping
     public WorkoutExerciseDto addWorkoutExercise(@RequestBody WorkoutExerciseDto workoutExerciseDto) {
         return workoutExerciseFacade.addWorkoutExercise(workoutExerciseDto);
