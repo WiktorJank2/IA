@@ -132,4 +132,7 @@ export class Plan {
             });
         }
     }
+    selectWorkout(index: number) {
+        console.log('Selected workout at index', index);
+    } // Handle selection logic if needed (e.g., mark it as chosen)
 }
