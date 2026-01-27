@@ -27,10 +27,10 @@ export class AppMenu {
             {
                 label: 'Menu',
                 items: [
-                    { label: 'Plan', icon: '', routerLink: ['/menu/plan'] },
-                    { label: 'Exercise', icon: '', routerLink: ['/menu/exercise'] },
-                    { label: 'Samples', icon: '', routerLink: ['/menu/samples'] },
-                    { label: 'Workouts', icon: '', routerLink: ['/menu/workout'] },
+                    { label: 'Create Plan', icon: '', routerLink: ['/menu/plan'] },
+                    { label: 'Create Exercise', icon: '', routerLink: ['/menu/exercise'] },
+                    { label: 'Sample Plans', icon: '', routerLink: ['/menu/samples'] },
+                    { label: 'Create Workout', icon: '', routerLink: ['/menu/workout'] },
                     { label: 'My Plans', icon: '', routerLink: ['/menu/my-plans'] }
                 ]
             },
