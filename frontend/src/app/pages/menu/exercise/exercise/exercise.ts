@@ -1,23 +1,21 @@
 import { Component, ViewChild } from '@angular/core';
-import {InputText} from "primeng/inputtext";
-import {Select} from "primeng/select";
-import {Textarea} from "primeng/textarea";
-import {FormsModule} from "@angular/forms";
-import {Button} from "primeng/button";
-import {RouterLink} from "@angular/router";
-import {Image} from "primeng/image";
-import {Router} from "@angular/router";
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
+import { Textarea } from 'primeng/textarea';
+import { FormsModule } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { Image } from 'primeng/image';
+import { MultiSelect } from 'primeng/multiselect';
 import { ExerciseFacade } from '@/pages/service/exercise/exercise.facade';
 import { ExerciseDto } from '@/pages/service/exercise/exercise.model';
-import { MultiSelect } from 'primeng/multiselect';
-import {BodyCanvas} from "@/layout/body-canvas/body-canvas";
-import { ActivatedRoute } from '@angular/router';
-
-
-
+import { BodyCanvas } from '@/layout/body-canvas/body-canvas';
 
 @Component({
     selector: 'app-exercise',
+    standalone: true,
+    templateUrl: './exercise.html',
+    styleUrl: './exercise.scss',
     imports: [
         InputText,
         Select,
@@ -28,25 +26,30 @@ import { ActivatedRoute } from '@angular/router';
         Image,
         MultiSelect,
         BodyCanvas
-    ],
-    templateUrl: './exercise.html',
-    standalone: true,
-    styleUrl: './exercise.scss'
+    ]
 })
 export class Exercise {
+    // Form fields
     name = '';
     description = '';
-    exerciseId: string | null = null;
     selectedMuscles: string[] = [];
     difficultyRating: number | null = null;
     effectivenessRating: number | null = null;
     overallRating: number | null = null;
 
+    // Current exercise ID (edit mode)
+    exerciseId: string | null = null;
+
+    // Reference to body canvas component
+    @ViewChild(BodyCanvas) bodyCanvas!: BodyCanvas;
+
     constructor(
         private exerciseFacade: ExerciseFacade,
         private router: Router,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute
     ) {}
+
+    // Available muscle options
     muscleOptions = [
         { label: 'Abdominals', value: 'Abdominals' },
         { label: 'Adductors', value: 'Adductors' },
@@ -69,6 +72,7 @@ export class Exercise {
         { label: 'Upper Back', value: 'Upper Back' }
     ];
 
+    // Difficulty rating options
     simplicityR = [
         { label: 'Very Easy', value: 1 },
         { label: 'Easy', value: 2 },
@@ -76,6 +80,8 @@ export class Exercise {
         { label: 'Hard', value: 4 },
         { label: 'Very Hard', value: 5 }
     ];
+
+    // Effectiveness rating options
     effectivenessR = [
         { label: 'Very Low', value: 1 },
         { label: 'Low', value: 2 },
@@ -83,6 +89,8 @@ export class Exercise {
         { label: 'High', value: 4 },
         { label: 'Very High', value: 5 }
     ];
+
+    // Overall rating options
     overallR = [
         { label: '1 / 5', value: 1 },
         { label: '2 / 5', value: 2 },
@@ -90,23 +98,19 @@ export class Exercise {
         { label: '4 / 5', value: 4 },
         { label: '5 / 5', value: 5 }
     ];
-    @ViewChild(BodyCanvas) bodyCanvas!: BodyCanvas;
 
-
+    // Loads exercise data when editing
     ngOnInit() {
         this.exerciseId = this.route.snapshot.queryParamMap.get('id');
 
         if (this.exerciseId) {
-            // EDIT MODE
             this.exerciseFacade.getById(this.exerciseId).subscribe(exercise => {
                 this.fillForm(exercise);
             });
         }
     }
 
-    dropdownItem = null;
-    protected muscleLoad: any;
-
+    // Populates form fields from backend data
     fillForm(exercise: ExerciseDto) {
         this.name = exercise.name;
         this.description = exercise.description;
@@ -118,6 +122,7 @@ export class Exercise {
         this.updateCanvasMuscles();
     }
 
+    // Creates or updates an exercise
     saveExercise() {
         if (
             !this.name ||
@@ -127,7 +132,6 @@ export class Exercise {
             !this.overallRating ||
             this.selectedMuscles.length === 0
         ) {
-            console.log('Missing required fields');
             return;
         }
 
@@ -141,33 +145,23 @@ export class Exercise {
             overallRating: this.overallRating
         };
 
-        console.log('Exercise payload:', exercise);
-
         if (this.exerciseId) {
-            //UPDATE
-            console.log('UPDATING exercise with id:', this.exerciseId);
-            console.log('Payload:', exercise);
-
-            this.exerciseFacade.updateExercise(this.exerciseId, exercise).subscribe({
-                error: err => {
-                    console.error('Failed to update exercise', err);
-                }
-            });
+            this.exerciseFacade.updateExercise(this.exerciseId, exercise).subscribe();
         } else {
-            //CREATE
-            this.exerciseFacade.createExercise(exercise).subscribe({
-                error: err => console.error('Failed to create exercise', err)
-            });
+            this.exerciseFacade.createExercise(exercise).subscribe();
         }
     }
 
+    // Syncs selected muscles with the body canvas
     updateCanvasMuscles() {
-        if (!this.bodyCanvas) return; // ensure canvas exists
+        if (!this.bodyCanvas) return;
+
         this.bodyCanvas.activeMuscles = this.selectedMuscles;
         this.bodyCanvas.applyActiveMuscles();
     }
+
+    // Ensures canvas reflects initial selection
     ngAfterViewInit() {
-        // optional: initialize with current selection
         this.updateCanvasMuscles();
     }
 }

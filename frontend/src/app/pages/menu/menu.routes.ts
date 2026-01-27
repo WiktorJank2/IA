@@ -8,10 +8,10 @@ import {Plan} from "@/pages/menu/plan/plan";
 
 
 export default [
-    { path: 'workout', data: { breadcrumb: 'Workout' }, component: Workout },
-    { path: 'plan', data: { breadcrumb: 'Plan' }, component: Plan },
-    { path: 'exercise', data: { breadcrumb: 'Exercise' }, component: Exercise },
-    { path: 'samples', data: { breadcrumb: 'Samples' }, component: Samples },
+    { path: 'workout', data: { breadcrumb: 'Create Workout' }, component: Workout },
+    { path: 'plan', data: { breadcrumb: 'Create Plan' }, component: Plan },
+    { path: 'exercise', data: { breadcrumb: 'Create Exercise' }, component: Exercise },
+    { path: 'samples', data: { breadcrumb: 'Sample Plans' }, component: Samples },
     { path: 'my-plans', data: { breadcrumb: 'My Plans' }, component: MyPlans },
     { path: '**', redirectTo: '/notfound' },
     {

@@ -1,23 +1,21 @@
-import {ElementRef} from '@angular/core';
-import {ButtonDirective, ButtonModule} from "primeng/button";
-import {CommonModule, CurrencyPipe, DatePipe} from "@angular/common";
-import {IconField, IconFieldModule} from "primeng/iconfield";
-import {InputIcon, InputIconModule} from "primeng/inputicon";
-import {InputText, InputTextModule} from "primeng/inputtext";
-import {ProgressBar, ProgressBarModule} from "primeng/progressbar";
-import {Select, SelectModule} from "primeng/select";
-import {Slider, SliderModule} from "primeng/slider";
-import {Tag, TagModule} from "primeng/tag";
-import {MultiSelectModule} from "primeng/multiselect";
-import {ToggleButtonModule} from "primeng/togglebutton";
-import {ToastModule} from "primeng/toast";
-import {FormsModule} from "@angular/forms";
-import {RatingModule} from "primeng/rating";
-import {RippleModule} from "primeng/ripple";
-import {ConfirmationService, MessageService} from "primeng/api";
-import {Customer, CustomerService} from "@/pages/service/customer.service";
-import {ProductService} from "@/pages/service/product.service";
-import {RouterLink, Router} from "@angular/router";
+import { ElementRef } from '@angular/core';
+import { ButtonDirective, ButtonModule } from 'primeng/button';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { IconField, IconFieldModule } from 'primeng/iconfield';
+import { InputIcon, InputIconModule } from 'primeng/inputicon';
+import { InputText, InputTextModule } from 'primeng/inputtext';
+import { ProgressBar, ProgressBarModule } from 'primeng/progressbar';
+import { Select, SelectModule } from 'primeng/select';
+import { Slider, SliderModule } from 'primeng/slider';
+import { Tag, TagModule } from 'primeng/tag';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToastModule } from 'primeng/toast';
+import { FormsModule } from '@angular/forms';
+import { RatingModule } from 'primeng/rating';
+import { RippleModule } from 'primeng/ripple';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { RouterLink, Router } from '@angular/router';
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
@@ -26,12 +24,13 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { Plan } from '../samples/samples/samples';
 
+// Tracks expanded rows in the table
 interface expandedRows {
     [key: string]: boolean;
 }
 
 @Component({
-  selector: 'app-my-plans',
+    selector: 'app-my-plans',
     standalone: true,
     imports: [
         TableModule,
@@ -54,36 +53,49 @@ interface expandedRows {
         CheckboxModule,
         RadioButtonModule
     ],
-  templateUrl: './my-plans.html',
-  styleUrl: './my-plans.scss',
-  providers: [ConfirmationService, MessageService, CustomerService, ProductService]
+    templateUrl: './my-plans.html',
+    styleUrl: './my-plans.scss',
 })
 export class MyPlans {
+
+    // Reference to PrimeNG table instance
     @ViewChild('dt1') dt1!: Table;
 
+    // Available status options
     statuses: any[] = [];
 
+    // Currently selected plan
     selectedPlan: PlanDto | null = null;
 
+    // All plans loaded from backend
     plans: PlanDto[] = [];
+
+    // Loading indicator state
     loading = false;
+
+    // Plans marked as selected
     selectedPlans: PlanDto[] = [];
+
+    // ID of the current active plan
     currentPlanId: string | null = null;
+
+    // Cached current plan ID
     currentId: string | null = null;
 
     constructor(
-        private customerService: CustomerService,
-        private productService: ProductService,
+        // Facade handling plan state and API calls
         private planFacade: PlanFacade,
+        // Router used for navigation
         private router: Router
-    ) {
-    }
+    ) {}
 
+    // Applies global text filter to the table
     onGlobalFilter(event: Event) {
         const value = (event.target as HTMLInputElement).value;
         this.dt1.filterGlobal(value, 'contains');
     }
 
+    // Counts active workouts in a plan
     getActiveWorkoutCount(plan: Plan): number {
         let count = 0;
 
@@ -100,11 +112,12 @@ export class MyPlans {
         return count;
     }
 
-    openPlan(planId: string) {  // planId is string if your array is string[]
-       this.router.navigate(['/menu/plan'], { queryParams: { id: planId } });
-
+    // Navigates to plan details page
+    openPlan(planId: string) {
+        this.router.navigate(['/menu/plan'], { queryParams: { id: planId } });
     }
 
+    // Marks selected plan as current
     onCurrentChange(selectedPlan: PlanDto) {
         this.currentPlanId = selectedPlan.id!;
 
@@ -114,6 +127,7 @@ export class MyPlans {
         }));
     }
 
+    // Persists selected plans to backend
     savePlan() {
         console.log('Plans at save time:', this.selectedPlans);
 
@@ -135,9 +149,12 @@ export class MyPlans {
         }
     }
 
+    // Clears all table filters
     clear() {
         this.dt1.clear();
     }
+
+    // Initializes plan state and subscriptions
     ngOnInit() {
         this.planFacade.planState$.subscribe(plans => {
             this.selectedPlans = plans.filter(plan => plan.selected === true);
@@ -151,6 +168,4 @@ export class MyPlans {
 
         this.planFacade.fetchAllPlans();
     }
-
-
 }

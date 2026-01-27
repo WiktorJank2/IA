@@ -3,17 +3,13 @@ import { Table, TableModule } from 'primeng/table';
 import { PlanFacade } from '@/pages/service/plan/plan.facade';
 import { PlanDto } from '@/pages/service/plan/plan.model';
 import { RouterLink, Router } from '@angular/router';
-import { Button } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
-import { ButtonModule } from 'primeng/button';
-import { Checkbox } from 'primeng/checkbox';
-import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
-import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-
 
 export interface Plan {
     id: string;
@@ -25,115 +21,101 @@ export interface Plan {
 
 @Component({
     selector: 'app-samples',
+    standalone: true,
+    templateUrl: './samples.html',
     imports: [
         TableModule,
         RouterLink,
-        Button,
         ButtonModule,
-        TableModule,
         IconField,
         InputIcon,
-        InputIcon,
-        IconField,
-        Checkbox,
-        Checkbox,
+        InputTextModule,
+        CheckboxModule,
         CommonModule,
-        FormsModule,      // <-- needed for [(ngModel)]
-        CheckboxModule
-    ],
-    standalone: true,
-    templateUrl: './samples.html'
-
+        FormsModule
+    ]
 })
-
-
 export class Samples implements OnInit {
+    // Reference to PrimeNG table instance
     @ViewChild('dt1') dt1!: Table;
 
-
-
+    // Plans displayed in the table
     plans: PlanDto[] = [];
+
+    // Controls loading state of the table
     loading = false;
-    private restWorkoutId= '318ce03f-b09f-4407-9cf2-2c2d011e8ab1';
 
-    constructor(private planFacade: PlanFacade, private router: Router) {}
+    // ID of the rest workout used for filtering
+    private restWorkoutId = '318ce03f-b09f-4407-9cf2-2c2d011e8ab1';
 
+    constructor(
+        private planFacade: PlanFacade,
+        private router: Router
+    ) {}
+
+    // Loads plans from the facade and keeps local copy sorted
     ngOnInit() {
         this.loading = true;
 
-        // Subscribe to facade, but copy values locally
         this.planFacade.planState$.subscribe(plansFromFacade => {
-            this.plans = [...plansFromFacade]
-                .sort((a, b) => (b.selected ? 1 : 0) - (a.selected ? 1 : 0)); // selected first
+            this.plans = [...plansFromFacade].sort(
+                (a, b) => (b.selected ? 1 : 0) - (a.selected ? 1 : 0)
+            );
             this.loading = false;
         });
 
-        // Trigger initial fetch
         this.planFacade.fetchAllPlans();
     }
 
-    openPlan(planId: string) {  // planId is string if your array is string[]
+    // Navigates to the selected plan view
+    openPlan(planId: string) {
         this.router.navigate(['/menu/plan'], { queryParams: { id: planId } });
     }
 
+    // Applies global text filtering to the table
     onGlobalFilter(event: Event) {
         const value = (event.target as HTMLInputElement).value;
         this.dt1.filterGlobal(value, 'contains');
     }
 
+    // Counts workouts excluding the rest workout
     getActiveWorkoutCount(plan: Plan): number {
-        let count = 0;
+        if (!plan.workoutIds) return 0;
 
-        if (!plan.workoutIds) {
-            return 0;
-        }
-
-        for (const id of plan.workoutIds) {
-            if (id !== '2f998760-10be-4bf8-8363-770d8f40eb19') {
-                count++;
-            }
-        }
-
-        return count;
+        return plan.workoutIds.filter(
+            id => id !== this.restWorkoutId
+        ).length;
     }
 
+    // Clears all table filters
     clear() {
         this.dt1.clear();
     }
 
+    // Persists all plans to the backend
     savePlan() {
-        if (!this.plans || this.plans.length === 0) {
-            console.log('No plans to save');
-            return;
-        }
+        if (!this.plans || this.plans.length === 0) return;
 
-        for (let plan of this.plans) {
-            console.log('Saving plan:', plan.id, plan.selected);
-
+        for (const plan of this.plans) {
             this.planFacade.updatePlan(plan.id!, plan).subscribe({
-                next: (returnedPlan) => {
-                    // Update local state with what the backend actually saved
+                next: returnedPlan => {
                     const index = this.plans.findIndex(p => p.id === returnedPlan.id);
                     if (index !== -1) {
                         this.plans[index] = returnedPlan;
                     }
-                    console.log('Plan saved:', returnedPlan.id);
-                },
-                error: (err) => {
-                    console.error('Failed to save plan', plan.id, err);
                 }
             });
         }
     }
 
+    // Updates selected state when checkbox is toggled
     onCheckboxChange(event: any, plan: PlanDto) {
-        const checked = event.checked;
-
         const index = this.plans.findIndex(p => p.id === plan.id);
         if (index === -1) return;
-        console.log('Updating plan:', plan.id, plan);
-        // Update the local plan.selected only
-        this.plans[index] = { ...plan, selected: checked };
-    }
 
+        this.plans[index] = {
+            ...plan,
+            selected: event.checked
+        };
+    }
 }

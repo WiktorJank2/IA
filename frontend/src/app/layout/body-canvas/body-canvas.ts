@@ -1,14 +1,8 @@
-import {Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
-import {
-    OnChanges,
-    Input,
-    SimpleChanges,
-} from '@angular/core';
-import {CommonModule, JsonPipe} from '@angular/common';
-import {BODY_POLYGONS, PolyDef, Pt} from "@/layout/body-canvas/body-polygons.data";
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { OnChanges, Input, SimpleChanges } from '@angular/core';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { BODY_POLYGONS, PolyDef, Pt } from "@/layout/body-canvas/body-polygons.data";
 import { MUSCLE_TO_POLYGONS } from '@/layout/body-canvas/muscle-polygons.map';
-
-
 
 type ColorKey = 'red' | 'orange' | 'green';
 
@@ -18,8 +12,6 @@ type PolyRender = PolyDef & {
     strokeWidth?: number;
     visible: boolean;
 };
-
-
 
 @Component({
     selector: 'app-body-canvas',
@@ -33,146 +25,153 @@ type PolyRender = PolyDef & {
 })
 export class BodyCanvas implements AfterViewInit, OnChanges {
 
-
-
-
+    // Reference to the canvas element
     @ViewChild('myCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-    // --- Konfiguracja / stan ---
+    // Background image path
     imgSrc = '/assets/images/Body-diagram-empty.png';
 
-    // 3 kolory (paleta)
+    // Color palette used for polygons
     private palette: Record<ColorKey, { fill: string; stroke: string }> = {
-        red: {fill: 'rgba(255, 0, 0, 0.35)', stroke: 'rgba(255, 0, 0, 0.9)'},
-        orange: {fill: 'rgba(255, 123, 0, 0.35)', stroke: 'rgba(255, 123, 0, 0.9)'},
-        green: {fill: 'rgba(0, 200, 120, 0.25)', stroke: 'rgba(0, 200, 120, 0.85)'}
+        red: { fill: 'rgba(255, 0, 0, 0.35)', stroke: 'rgba(255, 0, 0, 0.9)' },
+        orange: { fill: 'rgba(255, 123, 0, 0.35)', stroke: 'rgba(255, 123, 0, 0.9)' },
+        green: { fill: 'rgba(0, 200, 120, 0.25)', stroke: 'rgba(0, 200, 120, 0.85)' }
     };
 
-
+    // Stores chosen color for each polygon
     polygonColors: Record<string, ColorKey> = {};
+
+    // IDs of polygons currently visible
     visibleIds = new Set<string>();
+
+    // Polygons prepared for rendering
     polygons: PolyRender[] = [];
+
+    // Muscle currently under the mouse
     hoveredMuscle: string | null = null;
-    // Hover i zbieranie punktów
+
+    // Current mouse position
     hover: Pt | null = null;
+
+    // Points collected in admin mode
     collected: Pt[] = [];
 
-    // Canvas internals
+    // Canvas rendering context
     private ctx!: CanvasRenderingContext2D;
+
+    // Background image instance
     private img = new Image();
+
+    // Device pixel ratio
     private dpr = 1;
-    private adminMode = false
+
+    // Enables polygon editing features
+    private adminMode = false;
 
     constructor() {
-        // Które elementy startowo pokazujemy
         this.visibleIds = new Set([]);
-
-
     }
 
+    // Makes all muscle polygons visible
     showMuscles() {
-
-        this.showPolygon('biceps_1')
-        this.showPolygon('biceps_2')
-        this.showPolygon('biceps_3')
-        this.showPolygon('forearm_1')
-        this.showPolygon('forearm_2')
-        this.showPolygon('forearm_3')
-        this.showPolygon('forearm_4')
-        this.showPolygon('forearm_5')
-        this.showPolygon('chest_1')
-        this.showPolygon('chest_2')
-        this.showPolygon('chest_3')
-        this.showPolygon('abdominals_1')
-        this.showPolygon('abdominals_2')
-        this.showPolygon('abdominals_3')
-        this.showPolygon('abdominals_4')
-        this.showPolygon('abdominals_5')
-        this.showPolygon('abdominals_6')
-        this.showPolygon('abdominals_7')
-        this.showPolygon('abdominals_8')
-        this.showPolygon('abdominals_9')
-        this.showPolygon('adductors_1')
-        this.showPolygon('adductors_2')
-        this.showPolygon('adductors_3')
-        this.showPolygon('calves_1')
-        this.showPolygon('calves_2')
-        this.showPolygon('calves_3')
-        this.showPolygon('calves_4')
-        this.showPolygon('calves_5')
-        this.showPolygon('calves_6')
-        this.showPolygon('calves_7')
-        this.showPolygon('glutes_1')
-        this.showPolygon('glutes_2')
-        this.showPolygon('hamstrings_1')
-        this.showPolygon('hamstrings_2')
-        this.showPolygon('hamstrings_3')
-        this.showPolygon('hip-flexors_1')
-        this.showPolygon('hip-flexors_2')
-        this.showPolygon('hip-flexors_3')
-        this.showPolygon('hip-flexors_4')
-        this.showPolygon('hip-flexors_5')
-        this.showPolygon('shoulders_1')
-        this.showPolygon('shoulders_2')
-        this.showPolygon('shoulders_3')
-        this.showPolygon('shoulders_4')
-        this.showPolygon('shoulders_5')
-        this.showPolygon('triceps_1')
-        this.showPolygon('triceps_2')
-        this.showPolygon('triceps_3')
-        this.showPolygon('obliques_1')
-        this.showPolygon('obliques_2')
-        this.showPolygon('obliques_3')
-        this.showPolygon('obliques_4')
-        this.showPolygon('obliques_5')
-        this.showPolygon('quadriceps_1')
-        this.showPolygon('quadriceps_2')
-        this.showPolygon('quadriceps_3')
-        this.showPolygon('rear-deltoids_1')
-        this.showPolygon('rear-deltoids_2')
-        this.showPolygon('upper-back_1')
-        this.showPolygon('upper-back_2')
-        this.showPolygon('upper-back_3')
-        this.showPolygon('upper-back_4')
-        this.showPolygon('lats_1')
-        this.showPolygon('lats_2')
-        this.showPolygon('lats_3')
-        this.showPolygon('triceps_1')
-        this.showPolygon('triceps_2')
-        this.showPolygon('triceps_3')
-        this.showPolygon('lower-back_1')
-        this.showPolygon('neck_1')
-        this.showPolygon('neck_2')
+        this.showPolygon('biceps_1');
+        this.showPolygon('biceps_2');
+        this.showPolygon('biceps_3');
+        this.showPolygon('forearm_1');
+        this.showPolygon('forearm_2');
+        this.showPolygon('forearm_3');
+        this.showPolygon('forearm_4');
+        this.showPolygon('forearm_5');
+        this.showPolygon('chest_1');
+        this.showPolygon('chest_2');
+        this.showPolygon('chest_3');
+        this.showPolygon('abdominals_1');
+        this.showPolygon('abdominals_2');
+        this.showPolygon('abdominals_3');
+        this.showPolygon('abdominals_4');
+        this.showPolygon('abdominals_5');
+        this.showPolygon('abdominals_6');
+        this.showPolygon('abdominals_7');
+        this.showPolygon('abdominals_8');
+        this.showPolygon('abdominals_9');
+        this.showPolygon('adductors_1');
+        this.showPolygon('adductors_2');
+        this.showPolygon('adductors_3');
+        this.showPolygon('calves_1');
+        this.showPolygon('calves_2');
+        this.showPolygon('calves_3');
+        this.showPolygon('calves_4');
+        this.showPolygon('calves_5');
+        this.showPolygon('calves_6');
+        this.showPolygon('calves_7');
+        this.showPolygon('glutes_1');
+        this.showPolygon('glutes_2');
+        this.showPolygon('hamstrings_1');
+        this.showPolygon('hamstrings_2');
+        this.showPolygon('hamstrings_3');
+        this.showPolygon('hip-flexors_1');
+        this.showPolygon('hip-flexors_2');
+        this.showPolygon('hip-flexors_3');
+        this.showPolygon('hip-flexors_4');
+        this.showPolygon('hip-flexors_5');
+        this.showPolygon('shoulders_1');
+        this.showPolygon('shoulders_2');
+        this.showPolygon('shoulders_3');
+        this.showPolygon('shoulders_4');
+        this.showPolygon('shoulders_5');
+        this.showPolygon('triceps_1');
+        this.showPolygon('triceps_2');
+        this.showPolygon('triceps_3');
+        this.showPolygon('obliques_1');
+        this.showPolygon('obliques_2');
+        this.showPolygon('obliques_3');
+        this.showPolygon('obliques_4');
+        this.showPolygon('obliques_5');
+        this.showPolygon('quadriceps_1');
+        this.showPolygon('quadriceps_2');
+        this.showPolygon('quadriceps_3');
+        this.showPolygon('rear-deltoids_1');
+        this.showPolygon('rear-deltoids_2');
+        this.showPolygon('upper-back_1');
+        this.showPolygon('upper-back_2');
+        this.showPolygon('upper-back_3');
+        this.showPolygon('upper-back_4');
+        this.showPolygon('lats_1');
+        this.showPolygon('lats_2');
+        this.showPolygon('lats_3');
+        this.showPolygon('lower-back_1');
+        this.showPolygon('neck_1');
+        this.showPolygon('neck_2');
     }
+
+    // Example manual color change
     changeMuscleColor() {
-
-        this.setPolygonColor('biceps_1', 'green')
-        this.setPolygonColor('biceps_2', 'green')
-        this.setPolygonColor('chest_1', 'red')
-
+        this.setPolygonColor('biceps_1', 'green');
+        this.setPolygonColor('biceps_2', 'green');
+        this.setPolygonColor('chest_1', 'red');
     }
 
+    // Input defining muscle load values
     @Input() muscleLoad: Record<string, number> = {};
+
+    // Applies colors based on muscle load
     applyMuscleColors() {
         for (const [muscle, load] of Object.entries(this.muscleLoad)) {
-            const color = this.getColorForLoad(load); // returns 'green', 'orange', or 'red'
-            console.log(muscle, color);
+            const color = this.getColorForLoad(load);
             const polygons = MUSCLE_TO_POLYGONS[muscle.toLowerCase()] ?? [];
-            console.log('polygons for', muscle, MUSCLE_TO_POLYGONS[muscle]);
             polygons.forEach(polyId => {
-                this.setPolygonColor(polyId, color); // set color for each polygon
-                console.log('setting color for', polyId, color);
+                this.setPolygonColor(polyId, color);
             });
         }
-
-        this.rebuildPolygons(); // update fill/stroke
-        this.redraw();          // render
+        this.rebuildPolygons();
+        this.redraw();
     }
 
+    // Initializes polygon list from definitions
     initPolygons() {
         for (const muscle in MUSCLE_TO_POLYGONS) {
             MUSCLE_TO_POLYGONS[muscle].forEach(polyId => {
-                const polygon = this.getPolygonById(polyId); // implement this to find the polygon object
+                const polygon = this.getPolygonById(polyId);
                 if (polygon) {
                     this.polygons.push(polygon);
                 }
@@ -180,34 +179,32 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         }
     }
 
+    // Finds polygon by ID
     getPolygonById(id: string): PolyRender | undefined {
         return this.polygons.find(p => p.id === id);
     }
 
+    // Maps numeric load to a color
     getColorForLoad(load: number): ColorKey {
         if (load >= 380) return 'red';
-        if (load >= 240) return 'orange';
+        if (load >= 160) return 'orange';
         return 'green';
     }
 
-
-        // --- Lifecycle ---
+    // Sets up canvas and loads background image
     ngAfterViewInit() {
         const canvas = this.canvasRef.nativeElement;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        // HiDPI setup
         this.ensureHiDpi(canvas, this.ctx);
-
-        // Load background image
         this.img.src = this.imgSrc;
         this.img.onload = () => {
-            this.showMuscles();        // add IDs to visibleIds
-            this.applyMuscleColors();  // sets colors & rebuilds polygons
-            this.redraw();            // render everything
+            this.showMuscles();
+            this.applyMuscleColors();
+            this.redraw();
         };
-
     }
+
+    // Reacts to input changes
     ngOnChanges(changes: SimpleChanges) {
         if (changes['muscleLoad']) {
             this.applyMuscleColors();
@@ -217,12 +214,11 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         }
     }
 
-    // --- Budowanie listy do rysowania ---
+    // Rebuilds drawable polygon list
     rebuildPolygons() {
         this.polygons = BODY_POLYGONS.map(def => {
             const colorKey = this.polygonColors[def.id] ?? 'red';
             const c = this.palette[colorKey];
-
             return {
                 ...def,
                 fill: c.fill,
@@ -233,73 +229,67 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         });
     }
 
-    // --- API logiki: pokaz/ukryj/zmien kolor po ID ---
+    // Shows only one polygon
     showOnly(id: string) {
         this.visibleIds = new Set([id]);
         this.rebuildPolygons();
         this.redraw();
     }
 
+    // Shows multiple polygons
     showMany(ids: string[]) {
         this.visibleIds = new Set(ids);
         this.rebuildPolygons();
         this.redraw();
     }
 
+    // Hides a polygon
     hidePolygon(id: string) {
         this.visibleIds.delete(id);
         this.rebuildPolygons();
         this.redraw();
     }
+
+    // Marks a polygon as visible
     showPolygon(id: string) {
         this.visibleIds.add(id);
     }
 
+    // Assigns a color to a polygon
     setPolygonColor(id: string, color: ColorKey) {
         this.polygonColors[id] = color;
         this.rebuildPolygons();
         this.redraw();
     }
 
-
-
+    // Input defining selected muscles
     @Input() activeMuscles: string[] = [];
+
+    // Highlights selected muscles
     applyActiveMuscles() {
-        // All polygons start as red
         for (const muscle in MUSCLE_TO_POLYGONS) {
             MUSCLE_TO_POLYGONS[muscle].forEach(polyId => {
                 this.polygonColors[polyId] = 'red';
             });
         }
-
-        // Set selected muscles to green
         this.activeMuscles.forEach(muscle => {
             const polygons = MUSCLE_TO_POLYGONS[muscle.toLowerCase()] ?? [];
             polygons.forEach(polyId => {
                 this.setPolygonColor(polyId, 'green');
             });
         });
-
         this.rebuildPolygons();
         this.redraw();
     }
 
-
-
+    // Handles mouse movement over canvas
     onMouseMove(evt: MouseEvent) {
-
-
         const mousePos = this.getMousePos(evt);
         this.hover = mousePos;
-
-        // reset hovered muscle
         this.hoveredMuscle = null;
-
-        // find first visible polygon under mouse
         for (const poly of this.polygons) {
             if (!poly.visible) continue;
             if (this.isPointInPolygon(mousePos, poly.points)) {
-                // find which muscle this polygon belongs to
                 const muscle = Object.keys(MUSCLE_TO_POLYGONS).find(m =>
                     MUSCLE_TO_POLYGONS[m].includes(poly.id)
                 );
@@ -307,91 +297,84 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
                 break;
             }
         }
-
         this.redraw();
     }
 
+    // Point-in-polygon hit test
     private isPointInPolygon(point: Pt, polygon: Pt[]): boolean {
         let inside = false;
         for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
             const xi = polygon[i].x, yi = polygon[i].y;
             const xj = polygon[j].x, yj = polygon[j].y;
-
-            const intersect = ((yi > point.y) !== (yj > point.y)) &&
+            const intersect =
+                ((yi > point.y) !== (yj > point.y)) &&
                 (point.x < (xj - xi) * (point.y - yi) / (yj - yi + 0.00001) + xi);
             if (intersect) inside = !inside;
         }
         return inside;
     }
 
+    // Clears hover state
     onMouseLeave() {
         this.hover = null;
         this.hoveredMuscle = null;
         this.redraw();
     }
 
+    // Adds a point in admin mode
     addPoint() {
-        if(this.adminMode==true){
-        if (!this.hover) return;
-        this.collected.push({...this.hover});
-        this.redraw();
-        console.log(this.collected)
-    }}
+        if (this.adminMode === true) {
+            if (!this.hover) return;
+            this.collected.push({ ...this.hover });
+            this.redraw();
+        }
+    }
 
+    // Removes all collected points
     clearPoints() {
         this.collected = [];
         this.redraw();
     }
 
+    // Saves collected points as a new polygon
     saveCollectedAsRuntimePolygon(newId: string, color: ColorKey = 'red') {
         if (this.collected.length < 3) return;
-
         const c = this.palette[color];
         this.polygons.push({
             id: newId,
-            points: this.collected.map(p => ({...p})),
+            points: this.collected.map(p => ({ ...p })),
             fill: c.fill,
             stroke: c.stroke,
             strokeWidth: 2,
             visible: true
         });
-
         this.collected = [];
         this.redraw();
     }
 
-    // --- Rysowanie ---
+    // Redraws the entire canvas
     redraw() {
         const canvas = this.canvasRef.nativeElement;
         const ctx = this.ctx;
         if (!ctx) return;
-
-        // rozmiar w jednostkach CSS (ważne przy HiDPI)
         const rect = canvas.getBoundingClientRect();
         const cssW = Math.round(rect.width);
         const cssH = Math.round(rect.height);
-
-        // tło
         ctx.clearRect(0, 0, cssW, cssH);
         ctx.drawImage(this.img, 0, 0, cssW, cssH);
-
-        // wielokąty (tylko widoczne)
         for (const poly of this.polygons) {
             if (!poly.visible) continue;
             this.drawPolygon(ctx, poly.points, poly.fill, poly.stroke, poly.strokeWidth ?? 1);
         }
-
-        // zebrane punkty (markery)
         for (const p of this.collected) {
             this.drawPoint(ctx, p, '#ffd166');
         }
-
-        // hover HUD
         if (this.hover && this.hoveredMuscle) {
             this.drawLabel(ctx, this.hover, this.hoveredMuscle);
         }
     }
 
+    // Draws a filled polygon
     private drawPolygon(
         ctx: CanvasRenderingContext2D,
         points: Pt[],
@@ -400,7 +383,6 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         strokeWidth = 1
     ) {
         if (points.length < 3) return;
-
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
@@ -408,10 +390,8 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
             ctx.lineTo(points[i].x, points[i].y);
         }
         ctx.closePath();
-
         ctx.fillStyle = fillStyle;
         ctx.fill();
-
         if (strokeStyle) {
             ctx.lineWidth = strokeWidth;
             ctx.strokeStyle = strokeStyle;
@@ -420,6 +400,7 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         ctx.restore();
     }
 
+    // Draws a single point marker
     private drawPoint(ctx: CanvasRenderingContext2D, p: Pt, color = '#ff0') {
         ctx.save();
         ctx.beginPath();
@@ -429,27 +410,7 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         ctx.restore();
     }
 
-    private drawCrosshair(ctx: CanvasRenderingContext2D, p: Pt) {
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-
-        // pozioma
-        ctx.beginPath();
-        ctx.moveTo(0, p.y);
-        ctx.lineTo(ctx.canvas.width / this.dpr, p.y);
-        ctx.stroke();
-
-        // pionowa
-        ctx.beginPath();
-        ctx.moveTo(p.x, 0);
-        ctx.lineTo(p.x, ctx.canvas.height / this.dpr);
-        ctx.stroke();
-
-        ctx.restore();
-    }
-
+    // Draws a tooltip label
     private drawLabel(ctx: CanvasRenderingContext2D, p: Pt, text: string) {
         ctx.save();
         ctx.font = '12px sans-serif';
@@ -459,7 +420,6 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         const h = 16 + padding * 2;
         const x = p.x + 8;
         const y = p.y - (h + 8);
-
         ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
         ctx.fillRect(x, y, w, h);
         ctx.fillStyle = '#fff';
@@ -467,38 +427,31 @@ export class BodyCanvas implements AfterViewInit, OnChanges {
         ctx.restore();
     }
 
-    // --- Współrzędne i HiDPI ---
+    // Converts mouse event to canvas coordinates
     private getMousePos(evt: MouseEvent): Pt {
         const canvas = this.canvasRef.nativeElement;
         const rect = canvas.getBoundingClientRect();
-
-        // ctx jest przeskalowany o dpr, więc rysujemy w „CSS px”.
         const scaleX = (canvas.width / this.dpr) / rect.width;
         const scaleY = (canvas.height / this.dpr) / rect.height;
-
         return {
             x: Math.round((evt.clientX - rect.left) * scaleX),
             y: Math.round((evt.clientY - rect.top) * scaleY)
         };
     }
 
+    // Adjusts canvas for high DPI screens
     private ensureHiDpi(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, recalc = false) {
         const rect = canvas.getBoundingClientRect();
         this.dpr = window.devicePixelRatio || 1;
-
         const displayWidth = Math.max(1, Math.round(rect.width));
         const displayHeight = Math.max(1, Math.round(rect.height));
-
         canvas.width = Math.round(displayWidth * this.dpr);
         canvas.height = Math.round(displayHeight * this.dpr);
-
         if (recalc) {
             canvas.style.width = `${displayWidth}px`;
             canvas.style.height = `${displayHeight}px`;
         }
-
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(this.dpr, this.dpr);
     }
-
 }
