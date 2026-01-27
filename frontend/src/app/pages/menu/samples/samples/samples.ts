@@ -46,7 +46,7 @@ export class Samples implements OnInit {
     loading = false;
 
     // ID of the rest workout used for filtering
-    private restWorkoutId = '318ce03f-b09f-4407-9cf2-2c2d011e8ab1';
+    private restWorkoutId = '2f998760-10be-4bf8-8363-770d8f40eb19';
 
     constructor(
         private planFacade: PlanFacade,
