@@ -32,9 +32,10 @@ export class WorkoutExerciseService {
         return this.http.delete<WorkoutExerciseDto>(this.apiUrl + '/' + id);
     }
 
-    getExercisesByWorkoutId(workoutId: string): Observable<WorkoutExerciseDto[]> {
-        return this.http.get<WorkoutExerciseDto[]>(`${this.apiUrl}/workout/${workoutId}`);
+    getWorkoutExercisesByWorkoutId(id: string): Observable<WorkoutExerciseDto[]> {
+        return this.http.get<WorkoutExerciseDto[]>(`http://localhost:8080/workout-exercises/workout/${id}`);
     }
+
 
     createMany(workoutExerciseDtos: WorkoutExerciseDto[]) {
         return this.http.post<WorkoutExerciseDto[]>(this.apiUrl + '/many', workoutExerciseDtos);

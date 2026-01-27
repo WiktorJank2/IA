@@ -291,7 +291,7 @@ export class Workout {
 
                     console.log('Fetching exercises for workout id:', id);
 
-                    this.workoutExerciseService.getExercisesByWorkoutId(id).subscribe({
+                    this.workoutExerciseService.getWorkoutExercisesByWorkoutId(id).subscribe({
                         next: (workoutExerciseDtos) => {
                             console.log('getExercisesByWorkoutId SUCCESS');
                             console.log('Raw exercises response:', workoutExerciseDtos);

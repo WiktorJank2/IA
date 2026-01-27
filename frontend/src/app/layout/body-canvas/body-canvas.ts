@@ -1,6 +1,13 @@
 import {Component, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
+import {
+    OnChanges,
+    Input,
+    SimpleChanges,
+} from '@angular/core';
 import {CommonModule, JsonPipe} from '@angular/common';
 import {BODY_POLYGONS, PolyDef, Pt} from "@/layout/body-canvas/body-polygons.data";
+import { MUSCLE_TO_POLYGONS } from '@/layout/body-canvas/muscle-polygons.map';
+
 
 
 type ColorKey = 'red' | 'orange' | 'green';
@@ -12,14 +19,23 @@ type PolyRender = PolyDef & {
     visible: boolean;
 };
 
+
+
 @Component({
     selector: 'app-body-canvas',
     standalone: true,
-    imports: [CommonModule, JsonPipe],
+    imports: [
+        CommonModule,
+        JsonPipe,
+    ],
     templateUrl: './body-canvas.html',
     styleUrls: ['./body-canvas.scss']
 })
-export class BodyCanvas implements AfterViewInit {
+export class BodyCanvas implements AfterViewInit, OnChanges {
+
+
+
+
     @ViewChild('myCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
     // --- Konfiguracja / stan ---
@@ -33,23 +49,10 @@ export class BodyCanvas implements AfterViewInit {
     };
 
 
-    /**
-     * MAPA: id -> kolor
-     * (Ustawiane w constructorze)
-     */
     polygonColors: Record<string, ColorKey> = {};
-
-    /**
-     * Widoczność: które id mają być rysowane
-     * (Ustawiane w constructorze)
-     */
     visibleIds = new Set<string>();
-
-    /**
-     * Lista do rysowania (geometria + styl + visible)
-     */
     polygons: PolyRender[] = [];
-
+    hoveredMuscle: string | null = null;
     // Hover i zbieranie punktów
     hover: Pt | null = null;
     collected: Pt[] = [];
@@ -58,14 +61,13 @@ export class BodyCanvas implements AfterViewInit {
     private ctx!: CanvasRenderingContext2D;
     private img = new Image();
     private dpr = 1;
-    private adminMode = true
+    private adminMode = false
 
-    // =========================================================
-    // CONSTRUCTOR – logika startowa: lewa-noga zielona itd.
-    // =========================================================
     constructor() {
         // Które elementy startowo pokazujemy
         this.visibleIds = new Set([]);
+
+
     }
 
     showMuscles() {
@@ -141,8 +143,6 @@ export class BodyCanvas implements AfterViewInit {
         this.showPolygon('lower-back_1')
         this.showPolygon('neck_1')
         this.showPolygon('neck_2')
-        this.setPolygonColor('biceps_2', 'red')
-
     }
     changeMuscleColor() {
 
@@ -152,26 +152,69 @@ export class BodyCanvas implements AfterViewInit {
 
     }
 
+    @Input() muscleLoad: Record<string, number> = {};
+    applyMuscleColors() {
+        for (const [muscle, load] of Object.entries(this.muscleLoad)) {
+            const color = this.getColorForLoad(load); // returns 'green', 'orange', or 'red'
+            console.log(muscle, color);
+            const polygons = MUSCLE_TO_POLYGONS[muscle.toLowerCase()] ?? [];
+            console.log('polygons for', muscle, MUSCLE_TO_POLYGONS[muscle]);
+            polygons.forEach(polyId => {
+                this.setPolygonColor(polyId, color); // set color for each polygon
+                console.log('setting color for', polyId, color);
+            });
+        }
+
+        this.rebuildPolygons(); // update fill/stroke
+        this.redraw();          // render
+    }
+
+    initPolygons() {
+        for (const muscle in MUSCLE_TO_POLYGONS) {
+            MUSCLE_TO_POLYGONS[muscle].forEach(polyId => {
+                const polygon = this.getPolygonById(polyId); // implement this to find the polygon object
+                if (polygon) {
+                    this.polygons.push(polygon);
+                }
+            });
+        }
+    }
+
+    getPolygonById(id: string): PolyRender | undefined {
+        return this.polygons.find(p => p.id === id);
+    }
+
+    getColorForLoad(load: number): ColorKey {
+        if (load >= 380) return 'red';
+        if (load >= 240) return 'orange';
+        return 'green';
+    }
+
+
         // --- Lifecycle ---
     ngAfterViewInit() {
         const canvas = this.canvasRef.nativeElement;
         this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        // HiDPI (ostrość na retina)
+        // HiDPI setup
         this.ensureHiDpi(canvas, this.ctx);
 
-        // tło
+        // Load background image
         this.img.src = this.imgSrc;
         this.img.onload = () => {
-            this.rebuildPolygons();
-            this.redraw();
+            this.showMuscles();        // add IDs to visibleIds
+            this.applyMuscleColors();  // sets colors & rebuilds polygons
+            this.redraw();            // render everything
         };
 
-        // (opcjonalnie) resize
-        window.addEventListener('resize', () => {
-            this.ensureHiDpi(canvas, this.ctx, true);
-            this.redraw();
-        });
+    }
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes['muscleLoad']) {
+            this.applyMuscleColors();
+        }
+        if (changes['activeMuscles']) {
+            this.applyActiveMuscles();
+        }
     }
 
     // --- Budowanie listy do rysowania ---
@@ -218,36 +261,88 @@ export class BodyCanvas implements AfterViewInit {
         this.redraw();
     }
 
-    // --- Obsługa myszy (hover + zbieranie punktów) ---
-    onMouseMove(evt: MouseEvent) {
-        if(this.adminMode) {
-            this.hover = this.getMousePos(evt);
-            this.redraw();
+
+
+    @Input() activeMuscles: string[] = [];
+    applyActiveMuscles() {
+        // All polygons start as red
+        for (const muscle in MUSCLE_TO_POLYGONS) {
+            MUSCLE_TO_POLYGONS[muscle].forEach(polyId => {
+                this.polygonColors[polyId] = 'red';
+            });
         }
 
+        // Set selected muscles to green
+        this.activeMuscles.forEach(muscle => {
+            const polygons = MUSCLE_TO_POLYGONS[muscle.toLowerCase()] ?? [];
+            polygons.forEach(polyId => {
+                this.setPolygonColor(polyId, 'green');
+            });
+        });
+
+        this.rebuildPolygons();
+        this.redraw();
+    }
+
+
+
+    onMouseMove(evt: MouseEvent) {
+
+
+        const mousePos = this.getMousePos(evt);
+        this.hover = mousePos;
+
+        // reset hovered muscle
+        this.hoveredMuscle = null;
+
+        // find first visible polygon under mouse
+        for (const poly of this.polygons) {
+            if (!poly.visible) continue;
+            if (this.isPointInPolygon(mousePos, poly.points)) {
+                // find which muscle this polygon belongs to
+                const muscle = Object.keys(MUSCLE_TO_POLYGONS).find(m =>
+                    MUSCLE_TO_POLYGONS[m].includes(poly.id)
+                );
+                this.hoveredMuscle = muscle ?? null;
+                break;
+            }
+        }
+
+        this.redraw();
+    }
+
+    private isPointInPolygon(point: Pt, polygon: Pt[]): boolean {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i].x, yi = polygon[i].y;
+            const xj = polygon[j].x, yj = polygon[j].y;
+
+            const intersect = ((yi > point.y) !== (yj > point.y)) &&
+                (point.x < (xj - xi) * (point.y - yi) / (yj - yi + 0.00001) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
     }
 
     onMouseLeave() {
         this.hover = null;
+        this.hoveredMuscle = null;
         this.redraw();
     }
 
     addPoint() {
+        if(this.adminMode==true){
         if (!this.hover) return;
         this.collected.push({...this.hover});
         this.redraw();
         console.log(this.collected)
-    }
+    }}
 
     clearPoints() {
         this.collected = [];
         this.redraw();
     }
 
-    /**
-     * (Opcjonalnie) Zapis zebranych punktów jako NOWY element runtime.
-     * Uwaga: nie zapisze do pliku .data.ts, tylko doda do polygons w pamięci.
-     */
     saveCollectedAsRuntimePolygon(newId: string, color: ColorKey = 'red') {
         if (this.collected.length < 3) return;
 
@@ -292,9 +387,8 @@ export class BodyCanvas implements AfterViewInit {
         }
 
         // hover HUD
-        if (this.hover) {
-            this.drawCrosshair(ctx, this.hover);
-            this.drawLabel(ctx, this.hover, `(${this.hover.x}, ${this.hover.y})`);
+        if (this.hover && this.hoveredMuscle) {
+            this.drawLabel(ctx, this.hover, this.hoveredMuscle);
         }
     }
 

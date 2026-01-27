@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {InputText} from "primeng/inputtext";
 import {Select} from "primeng/select";
 import {Textarea} from "primeng/textarea";
@@ -90,6 +90,8 @@ export class Exercise {
         { label: '4 / 5', value: 4 },
         { label: '5 / 5', value: 5 }
     ];
+    @ViewChild(BodyCanvas) bodyCanvas!: BodyCanvas;
+
 
     ngOnInit() {
         this.exerciseId = this.route.snapshot.queryParamMap.get('id');
@@ -103,6 +105,7 @@ export class Exercise {
     }
 
     dropdownItem = null;
+    protected muscleLoad: any;
 
     fillForm(exercise: ExerciseDto) {
         this.name = exercise.name;
@@ -111,6 +114,8 @@ export class Exercise {
         this.difficultyRating = exercise.difficultyRating;
         this.effectivenessRating = exercise.effectivenessRating;
         this.overallRating = exercise.overallRating;
+
+        this.updateCanvasMuscles();
     }
 
     saveExercise() {
@@ -154,5 +159,15 @@ export class Exercise {
                 error: err => console.error('Failed to create exercise', err)
             });
         }
+    }
+
+    updateCanvasMuscles() {
+        if (!this.bodyCanvas) return; // ensure canvas exists
+        this.bodyCanvas.activeMuscles = this.selectedMuscles;
+        this.bodyCanvas.applyActiveMuscles();
+    }
+    ngAfterViewInit() {
+        // optional: initialize with current selection
+        this.updateCanvasMuscles();
     }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { PlanDto } from '@/pages/service/plan/plan.model';
 import { PlanService } from '@/pages/service/plan/plan.service';
@@ -82,6 +83,19 @@ export class PlanFacade {
                     this.planByIdState$.next(null);
                 }
             })
+        );
+    }
+
+    getCurrentPlan(): Observable<PlanDto> {
+        return this.planService.getAll().pipe(
+            map(plans => {
+                const current = plans.find(p => p.current === true);
+                if (!current) {
+                    throw new Error('No current plan found');
+                }
+                return current;
+            }),
+            take(1)
         );
     }
 }

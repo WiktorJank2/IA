@@ -16,6 +16,7 @@
                 <label for="lastname2"></label>
                 <p-multi-select [options]="muscleOptions"
                                 [(ngModel)]="selectedMuscles"
+                                (onChange)="updateCanvasMuscles()"
                                 optionLabel="label"
                                 optionValue="value"
                                 placeholder="Select muscles"
@@ -80,7 +81,7 @@
                 </div>
             </div>
             <div class="flex justify-center gap-5">
-                <img src="./assets/images/Body-diagram-empty.png" width="600" >
+                <app-body-canvas  #bodyCanvas></app-body-canvas>
             </div>
         </div>
 
